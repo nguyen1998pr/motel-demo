@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default class Navbar extends Component {
   state = {
-    isOpen: false
+    isOpen: false,
   };
   handleToggle = () => {
     this.setState({ isOpen: !this.state.isOpen });
@@ -26,13 +26,25 @@ export default class Navbar extends Component {
               <FaAlignRight className="nav-icon" />
             </button>
           </div>
-          <ul className={this.state.isOpen?"nav-links show-nav":"nav-links"}>
+          <ul
+            className={this.state.isOpen ? "nav-links show-nav" : "nav-links"}
+          >
+            <div className="left">
               <li>
-                  <Link to="/">Home</Link>
+                <Link to="/">Home</Link>
               </li>
               <li>
-                  <Link to="/apartments">Apartments</Link>
+                <Link to="/apartments">Apartments</Link>
               </li>
+            </div>
+            <div className="right">
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
+            </div>
           </ul>
         </div>
       </nav>

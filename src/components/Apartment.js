@@ -12,9 +12,12 @@ const Apartment = memo(({ apartment }) => {
         <img src={images[0] || defaultImg} alt="single apartment" />
         <div className="price-top">
           <h6>${price}</h6>
-          <p>per night</p>
+          <p>per month</p>
         </div>
-        <Link to={`/apartments/${apartmentName}`} className="btn-primary apartment-link">
+        <Link
+          to={`/apartments/${apartmentName}`}
+          className="btn-primary apartment-link"
+        >
           features
         </Link>
       </div>
@@ -28,7 +31,7 @@ Apartment.propTypes = {
     name: PropTypes.string.isRequired,
     apartmentName: PropTypes.string.isRequired,
     images: PropTypes.arrayOf(PropTypes.string).isRequired,
-    price: PropTypes.number.isRequired
-  })
+    price: PropTypes.number.isRequired,
+  }),
 };
 export default Apartment;
