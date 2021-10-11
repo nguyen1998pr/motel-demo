@@ -1,0 +1,63 @@
+{
+  "name": "rent-n-study",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "make-coverage-badge": "^1.2.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-icons": "^3.11.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^3.4.3",
+    "styled-components": "^5.2.1"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint --fix src/pages/*.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test src/tests/Error.test.js",
+    "test:coverage": "npm test -- --coverage",
+    "eject": "react-scripts eject"
+  },
+  "jest": {
+    "coverageReporters": [
+      "json-summary"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "codecov": "^3.8.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint-plugin-standard": "^4.0.1",
+    "ignore-styles": "^5.0.1",
+    "jsdom": "^16.4.0",
+    "mocha": "^8.2.1",
+    "mocha-jsdom": "^2.0.0",
+    "nyc": "^15.1.0"
+  }
+}
