@@ -1,0 +1,193 @@
+.woocommerce {
+  font-size: 13px;
+}
+.woocommerce .customer-login .tabs-content {
+  max-width: 430px;
+  margin: 0 auto;
+}
+.woocommerce .customer-register .tabs-content {
+  margin: 0 auto;
+}
+.martfury-login-tabs .tabs-content {
+  position: relative;
+}
+.martfury-login-tabs .tabs-panel.active {
+  position: relative;
+  z-index: 2;
+  opacity: 1;
+  top: 0;
+  transform: translateY(0);
+  transition: all 0.35s ease;
+  transition-delay: 0.1s;
+}
+.woocommerce .customer-login .tabs-panel {
+  background-color: #fff;
+  padding: 35px 30px 27px;
+  border: 1px solid #e8e8e8;
+  border-radius: 5px;
+}
+.woocommerce .customer-register .tabs-panel {
+  background-color: #fff;
+  padding: 35px 30px 27px;
+  border: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: space-around;
+  border-radius: 5px;
+}
+.woocommerce .customer-login .tabs-panel h2,
+.woocommerce .customer-register .tabs-panel h2 {
+  font-size: 16px;
+  margin: 0 0 25px;
+}
+.woocommerce .customer-login .tabs-panel form,
+.woocommerce .customer-register .tabs-panel form {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.woocommerce form.login {
+  border: 1px solid #d3ced2;
+  padding: 20px;
+  margin: 2em 0;
+  text-align: left;
+  border-radius: 5px;
+}
+.woocommerce-account .woocommerce .form-row {
+  margin-bottom: 12px;
+}
+.woocommerce form .form-row {
+  margin-bottom: 10px;
+  padding: 0;
+}
+.woocommerce form .form-row {
+  padding: 3px;
+  margin: 0 0 6px;
+}
+.woocommerce .customer-login .form-row .input-text,
+.woocommerce .customer-register .form-row .input-text {
+  padding: 14px 16px;
+  text-align: left;
+}
+.woocommerce-account .woocommerce .form-row .input-text {
+  background-color: transparent;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  color: #000;
+  font-weight: 400;
+  padding: 13px;
+}
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  outline: 0;
+  line-height: normal;
+}
+.woocommerce form .form-row .input-text {
+  color: #000;
+  min-width: inherit;
+  border: 1px solid #ccc;
+  padding: 16px;
+}
+input[type="text"],
+input[type="email"],
+textarea {
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  padding: 10px;
+}
+.woocommerce .customer-login .woocommerce-form-row__remember {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.woocommerce .customer-login .form-row .button,
+.woocommerce .customer-register .form-row .button {
+  width: 100%;
+  font-size: 16px;
+  margin-top: 20px;
+  border-radius: 3px;
+  height: 53px;
+  background-color: #dd2400;
+  color: #fff;
+}
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit {
+  background-color: var(--mf-background-primary-color);
+  color: var(--mf-background-primary-text-color);
+  height: 50px;
+  line-height: 50px;
+  padding: 0 25px;
+  transition: all 0.5s;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-radius: 0;
+}
+.woocommerce #respond input#submit,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button {
+  font-size: 100%;
+  margin: 0;
+  line-height: 1;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  overflow: visible;
+  padding: 0.618em 1em;
+  font-weight: 700;
+  border-radius: 3px;
+  left: auto;
+  color: #515151;
+  background-color: #ebe9eb;
+  border: 0;
+  display: inline-block;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+.woocommerce .customer-login .woocommerce-form__label-for-checkbox span {
+  display: inline-block;
+  color: #000;
+  text-transform: inherit;
+  position: relative;
+  line-height: 1;
+  padding-left: 10px;
+  cursor: pointer;
+}
+.woocommerce
+  .customer-login
+  .woocommerce-form-row__remember
+  .woocommerce-form__label-for-checkbox {
+  display: inline-block;
+  line-height: 1;
+  margin-top: 0;
+}
+.woocommerce-form__input-checkbox {
+  vertical-align: middle;
+}
+a {
+  transition: 0.5s;
+  color: #0066cc;
+  text-decoration: none;
+}
+@media screen and (max-width: 850px) {
+  .tabs-panel {
+    align-items: center;
+    flex-direction: column;
+  }
+}
+img.mb-4 {
+  max-width: 256px;
+  max-height: 64px;
+  width: inherit;
+  height: inherit;
+}
