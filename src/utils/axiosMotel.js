@@ -1,14 +1,13 @@
-import { configure } from "@testing-library/dom";
 import axios from "axios";
-
-const singletonEnforce = Symbol();
+import { assign } from "lodash";
+const singletonEnforcer = Symbol();
 
 class AxiosClient {
   axiosMotel;
   static axiosMotelInstance;
 
   constructor(enforcer) {
-    if (enforcer !== singletonEnforce) {
+    if (enforcer !== singletonEnforcer) {
       throw new Error("Cannot initialize Axios client single instance");
     }
 
@@ -29,14 +28,14 @@ class AxiosClient {
         return response;
       },
       (error) => {
-        return Promise.reject(errỏ.response);
+        return Promise.reject(error.response);
       }
     );
   }
 
   static get instance() {
     if (!this.axiosMotelInstance) {
-      this.axiosMotelInstance = new AxiosClient(singletonEnforce);
+      this.axiosMotelInstance = new AxiosClient(singletonEnforcer);
     }
     return this.axiosMotelInstance;
   }
@@ -88,3 +87,5 @@ class AxiosClient {
     });
   }
 }
+
+export default AxiosClient.instance;
