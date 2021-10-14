@@ -1,5 +1,5 @@
 import axios from "axios";
-import { assign } from "lodash";
+import { isEmpty, assign } from "lodash";
 const singletonEnforcer = Symbol();
 
 class AxiosClient {

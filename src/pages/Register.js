@@ -1,18 +1,73 @@
 import React, { useState } from "react";
-import "../custom.css";
+import * as apiServices from "../store/motel/services";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import logo from "../images/logo.svg";
+import "../css/custom.css";
 
-const Register = () => {
-  const [state, setState] = useState({});
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const Register = (props) => {
+  const [state, setState] = useState({
+    data: {},
+    notify: { vertical: "top", horizontal: "right" },
+  });
 
   const handleChange = (event) => {
-    setState((s) => ({ ...s, [event.target.name]: event.target.value }));
+    setState((s) => ({
+      ...s,
+      data: { ...state.data, [event.target.name]: event.target.value },
+    }));
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(state);
+
+    const btn = document.querySelector(".woocommerce-Button");
+    document.getElementById("register").disabled = true;
+    btn.classList.add("button--loading");
+
+    const request = apiServices.userRegister(state.data);
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          setState((s) => ({
+            ...s,
+            notify: {
+              ...state.notify,
+              open: true,
+              message: "Register Success!",
+              type: "success",
+            },
+          }));
+        }, 2000);
+      })
+      .catch((err) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          if (err.status === 500 || err.status === 409) {
+            setState((s) => ({
+              ...s,
+              notify: {
+                ...state.notify,
+                open: true,
+                message: "Register Fail!",
+                type: "error",
+              },
+            }));
+          }
+        }, 2000);
+      });
   };
+
+  const handleNotify = () => {
+    setState((s) => ({ ...s, notify: { ...state.notify, open: false } }));
+  };
+
+  const { vertical, horizontal } = state.notify;
 
   return (
     <>
@@ -52,8 +107,8 @@ const Register = () => {
                           className="woocommerce-Input woocommerce-Input--text input-text"
                           required=""
                           placeholder="First Name"
-                          name="firstname"
-                          id="firstname"
+                          name="firstName"
+                          id="firstName"
                           onChange={handleChange}
                           autoComplete="off"
                         />
@@ -64,8 +119,8 @@ const Register = () => {
                           className="woocommerce-Input woocommerce-Input--text input-text"
                           required=""
                           placeholder="Last Name"
-                          name="lastname"
-                          id="lastname"
+                          name="lastName"
+                          id="lastName"
                           onChange={handleChange}
                           autoComplete="off"
                         />
@@ -77,8 +132,8 @@ const Register = () => {
                         className="woocommerce-Input woocommerce-Input--text input-text"
                         required=""
                         placeholder="Username"
-                        name="username"
-                        id="username"
+                        name="userName"
+                        id="userName"
                         onChange={handleChange}
                         autoComplete="off"
                       />
@@ -149,11 +204,12 @@ const Register = () => {
                     <p className="form-row">
                       <button
                         className="woocommerce-Button button"
+                        id="register"
                         name="register"
                         value="Register"
                         onClick={handleSubmit}
                       >
-                        Register
+                        <span className="button__text">Register</span>
                       </button>
                     </p>
                   </form>
@@ -163,6 +219,17 @@ const Register = () => {
           </div>
         </div>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={state.notify.open}
+        onClose={handleNotify}
+        autoHideDuration={1500}
+        key={"top" + "right"}
+      >
+        <Alert severity={state.notify.type} sx={{ width: "100%" }}>
+          {state.notify.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

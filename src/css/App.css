@@ -93,12 +93,14 @@ h6 {
   top: 0;
   left: 0;
   width: 100%;
+  max-width: calc(100vw - 17px);
   padding: 0.75rem 2rem;
   background: var(--offWhite);
   z-index: 1;
 }
 .nav-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 .nav-btn {
@@ -117,6 +119,7 @@ h6 {
   transition: var(--mainTransition);
   list-style-type: none;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
 }
 .nav-links a,
@@ -173,14 +176,14 @@ h6 {
 .defaultHero,
 .apartmentsHero {
   min-height: calc(100vh - 66px);
-  background: url("./images/hinh-anh-dep-nhat-ve-da-nang_102908849.jpg")
+  background: url("../images/hinh-anh-dep-nhat-ve-da-nang_102908849.jpg")
     center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .apartmentsHero {
-  background-image: url("./images/apartment-2.jpeg");
+  background-image: url("../images/apartment-2.jpeg");
   min-height: 60vh;
 }
 /* End of Hero */
