@@ -1,119 +1,163 @@
-import React, { useState } from "react";
+import React from "react";
+import { Icon } from "@iconify/react";
+import { useRef, useState } from "react";
+import homeFill from "@iconify/icons-eva/home-fill";
+import personFill from "@iconify/icons-eva/person-fill";
+import settings2Fill from "@iconify/icons-eva/settings-2-fill";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+// material
+import { alpha } from "@mui/material/styles";
 import {
+  Button,
   Box,
-  Avatar,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItem,
-  ListItemText,
   Divider,
-  IconButton,
+  MenuItem,
   Typography,
-  Tooltip,
+  Avatar,
+  IconButton,
 } from "@mui/material";
-import { PersonAdd, Settings, Logout } from "@mui/icons-material";
+// components
+import MenuPopover from "../components/MenuPopover";
 import avatar from "../images/avatar.jpeg";
 
-const UserAvatar = (props) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+// ----------------------------------------------------------------------
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+const MENU_OPTIONS = [
+  {
+    label: "My Apartment",
+    icon: homeFill,
+    linkTo: "/user/apartments",
+  },
+  {
+    label: "Profile",
+    icon: personFill,
+    linkTo: "#",
+  },
+  {
+    label: "Settings",
+    icon: settings2Fill,
+    linkTo: "#",
+  },
+];
+
+// ----------------------------------------------------------------------
+
+export default function UserAvatar(props) {
+  const anchorRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const history = useHistory();
+
+  console.log(props);
+
+  const handleOpen = () => {
+    setOpen(true);
   };
-
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     props.callBack({ type: "logout", isLoggedIn: false });
+    history.push("/");
   };
 
   return (
-    <div>
-      <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        <Tooltip title="Account settings">
-          <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
-            <Avatar src={avatar} sx={{ width: 40, height: 40 }}></Avatar>
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <Menu
-        anchorEl={anchorEl}
+    <>
+      <IconButton
+        ref={anchorRef}
+        onClick={handleOpen}
+        sx={{
+          padding: 0,
+          width: 44,
+          height: 44,
+          ...(open && {
+            "&:before": {
+              zIndex: 1,
+              content: "''",
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              position: "absolute",
+              bgcolor: (theme) => alpha(theme.palette.grey[900], 0.72),
+            },
+          }),
+        }}
+      >
+        <Avatar src={avatar} alt="photoURL" />
+      </IconButton>
+
+      <MenuPopover
         open={open}
         onClose={handleClose}
-        onClick={handleClose}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            overflow: "visible",
-            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-            mt: 1.5,
-            "& .MuiAvatar-root": {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
-            "&:before": {
-              content: '""',
-              display: "block",
-              position: "absolute",
-              top: 0,
-              right: 14,
-              width: 10,
-              height: 10,
-              bgcolor: "background.paper",
-              transform: "translateY(-50%) rotate(45deg)",
-              zIndex: 0,
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        anchorEl={anchorRef.current}
+        sx={{ width: 220, borderRadius: "8px" }}
       >
-        <ListItem>
-          <ListItemText
-            primary={
-              <Typography type="body2" style={{ fontWeight: "bold" }}>
-                {props.user.firstName + " " + props.user.lastName}
-              </Typography>
-            }
-            secondary={props.user.email}
-          />
-        </ListItem>
-        <Divider />
-        <MenuItem>
-          <Avatar /> Profile
-        </MenuItem>
-        <MenuItem>
-          <Avatar /> My Motel
-        </MenuItem>
-        <Divider />
-        <MenuItem>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={handleLogout}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-      </Menu>
-    </div>
-  );
-};
+        <Box sx={{ my: 1.5, px: 2.5 }}>
+          <Typography
+            variant="subtitle1"
+            sx={{ fontFamily: "Public Sans,sans-serif", fontWeight: "bolder" }}
+            noWrap
+          >
+            {props.user.firstName + " " + props.user.lastName}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              fontFamily: "Public Sans,sans-serif",
+            }}
+            noWrap
+          >
+            {props.user.email}
+          </Typography>
+        </Box>
 
-export default UserAvatar;
+        <Divider sx={{ my: 1 }} />
+
+        {MENU_OPTIONS.map((option) => (
+          <MenuItem
+            key={option.label}
+            to={option.linkTo}
+            component={RouterLink}
+            onClick={handleClose}
+            sx={{
+              typography: "body2",
+              py: 1,
+              px: 2.5,
+              fontFamily: "Public Sans,sans-serif",
+            }}
+          >
+            <Box
+              component={Icon}
+              icon={option.icon}
+              sx={{
+                mr: 2,
+                width: 24,
+                height: 24,
+              }}
+            />
+
+            {option.label}
+          </MenuItem>
+        ))}
+
+        <Box sx={{ p: 2, pt: 1.5 }}>
+          <Button
+            fullWidth
+            color="inherit"
+            variant="outlined"
+            style={{
+              borderColor: "silver",
+              borderRadius: "8px",
+              fontFamily: "Public Sans,sans-serif",
+            }}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </Box>
+      </MenuPopover>
+    </>
+  );
+}
