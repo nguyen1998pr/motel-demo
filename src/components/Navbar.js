@@ -26,14 +26,16 @@ const Navbar = () => {
   });
 
   useEffect(() => {
-    const request = apiServices.userInfo();
-    request
-      .then((res) => {
-        setState((s) => ({ ...s, isLoggedIn: true, user: res.data.user }));
-      })
-      .catch((err) => {
-        setState((s) => ({ ...s, isLoggedIn: false }));
-      });
+    if (localStorage.getItem("token")) {
+      const request = apiServices.userInfo();
+      request
+        .then((res) => {
+          setState((s) => ({ ...s, isLoggedIn: true, user: res.data.user }));
+        })
+        .catch((err) => {
+          setState((s) => ({ ...s, isLoggedIn: false }));
+        });
+    }
   }, [state.isLoggedIn]);
 
   const handleToggle = () => {

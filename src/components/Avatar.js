@@ -47,8 +47,6 @@ export default function UserAvatar(props) {
   const [open, setOpen] = useState(false);
   const history = useHistory();
 
-  console.log(props);
-
   const handleOpen = () => {
     setOpen(true);
   };

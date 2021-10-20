@@ -1,18 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@mui/styles";
 import { DropzoneArea } from "material-ui-dropzone";
+import * as apiServices from "../store/motel/services";
 import "../css/custom.css";
 
-export default function CreateApartment() {
+const useStyles = makeStyles({
+  item: {
+    paddingLeft: "0px !important",
+    // paddingTop: "0px !important",
+    marginLeft: "64px",
+  },
+  dropzone: {
+    minHeight: "100px",
+    borderColor: "lightgray",
+  },
+  container: {
+    marginTop: "5px",
+    overflow: "auto",
+    overflowX: "hidden",
+    maxHeight: "500px",
+  },
+});
+
+export default function CreateApartment(props) {
+  const classes = useStyles();
   const [state, setState] = useState({
     data: {
       pets: false,
       featured: false,
       breakfast: false,
+      images: [],
     },
-    images: [],
     notify: { vertical: "top", horizontal: "right" },
   });
-  const formData = new FormData();
+
+  useEffect(() => {
+    if (props.props.isEdit) {
+      const request = apiServices.apartmentInfo(props.props.apartId);
+      request
+        .then((res) => {
+          setState((s) => ({
+            ...s,
+            data: {
+              ...res.data.prop.fields,
+              extras: res.data.prop.fields.extras
+                ?.map((item) => item)
+                .join("\n"),
+              images: res.data.prop.fields.images.map(
+                (item) =>
+                  `http://localhost:8080/uploads/properties/${item.name}`
+              ),
+            },
+          }));
+        })
+        .catch((err) => {});
+    }
+  }, []);
 
   const handleChange = (event) => {
     setState((s) => ({
@@ -35,17 +78,44 @@ export default function CreateApartment() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handlePanoImage = (image) => {
+    setState((s) => ({
+      ...s,
+      panoImages: image,
+    }));
+  };
+
+  const handleCreate = (event) => {
     event.preventDefault();
+    const formData = new FormData();
     const data = {
       ...state.data,
       extras: state.data["extras"]?.trim().split("\n"),
     };
-    formData.append("thisProp", JSON.stringify(data));
+    formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
     state.images.map((image, index) => {
       formData.append("photo", image, image.name);
     });
-    console.log(formData.get("photo"), data);
+
+    const request = apiServices.addApartment(formData);
+    request.then((res) => {}).catch((err) => {});
+  };
+
+  const handleEdit = (event) => {
+    event.preventDefault();
+    const formData = new FormData();
+    const data = {
+      ...state.data,
+      images: [],
+      extras: state.data["extras"]?.trim().split("\n"),
+    };
+    formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
+    state.images.map((image, index) => {
+      formData.append("photo", image, image.name);
+    });
+
+    const request = apiServices.editApartment(props.props.apartId, formData);
+    request.then((res) => {}).catch((err) => {});
   };
 
   return (
@@ -58,22 +128,80 @@ export default function CreateApartment() {
                 <div
                   style={{
                     width: "50%",
-                    padding: "60px 0",
                     border: "gray",
                   }}
                 >
-                  <DropzoneArea
-                    filesLimit={100}
-                    name="images"
-                    showAlerts={false}
-                    onChange={handleImage}
-                    showPreviews
-                    showPreviewsInDropzone={false}
-                    onAdd={(fileObjs) => console.log("Added Files:", fileObjs)}
-                  />
+                  <h2>Normal Images</h2>
+                  <div
+                  // style={{
+                  //   height: "250px",
+                  // }}
+                  >
+                    {(props.props.isAdd || !state.data.images.length) && (
+                      <DropzoneArea
+                        filesLimit={10}
+                        name="images"
+                        showAlerts={false}
+                        onChange={handleImage}
+                        showPreviews
+                        showPreviewsInDropzone={false}
+                        onAdd={(fileObjs) =>
+                          console.log("Added Files:", fileObjs)
+                        }
+                        dropzoneClass={classes.dropzone}
+                        previewGridClasses={{
+                          item: classes.item,
+                          container: classes.container,
+                        }}
+                      />
+                    )}
+                    {state.data.images.length && props.props.isEdit && (
+                      <DropzoneArea
+                        filesLimit={10}
+                        name="images"
+                        initialFiles={[...state.data.images]}
+                        showAlerts={false}
+                        onChange={handleImage}
+                        showPreviews
+                        showPreviewsInDropzone={false}
+                        onAdd={(fileObjs) =>
+                          console.log("Added Files:", fileObjs)
+                        }
+                        dropzoneClass={classes.dropzone}
+                        previewGridClasses={{
+                          item: classes.item,
+                          container: classes.container,
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* <h2 style={{ marginTop: "25px" }}>Panorama Images</h2>
+                  <div
+                    style={{
+                      height: "250px",
+                      overflow: "auto",
+                      overflowX: "hidden",
+                    }}
+                  >
+                    <DropzoneArea
+                      filesLimit={10}
+                      name="panoImages"
+                      showAlerts={false}
+                      onChange={handlePanoImage}
+                      showPreviews
+                      showPreviewsInDropzone={false}
+                      onAdd={(fileObjs) =>
+                        console.log("Added Files:", fileObjs)
+                      }
+                      dropzoneClass={classes.dropzone}
+                      previewGridClasses={{ item: classes.item }}
+                    />
+                  </div> */}
                 </div>
                 <div>
-                  <h2>Create Apartment</h2>
+                  <h2>
+                    {props.props.isEdit ? "Edit Apartment" : "Create Apartment"}
+                  </h2>
                   <form className="woocommerce-form woocommerce-form-login login">
                     <label>
                       Apartment Name&nbsp;<span className="required">*</span>
@@ -83,10 +211,28 @@ export default function CreateApartment() {
                         type="text"
                         spellCheck="false"
                         className="woocommerce-Input woocommerce-Input--text input-text"
-                        required=""
+                        defaultValue={
+                          props.props.isEdit ? state.data.apartmentName : ""
+                        }
                         placeholder="Apartment Name"
                         name="apartmentName"
                         id="apartmentName"
+                        onChange={handleChange}
+                        autoComplete="off"
+                      />
+                    </p>
+                    <label>
+                      Type&nbsp;<span className="required">*</span>
+                    </label>
+                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      <input
+                        type="text"
+                        spellCheck="false"
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        defaultValue={props.props.isEdit ? state.data.type : ""}
+                        placeholder="Type"
+                        name="type"
+                        id="type"
                         onChange={handleChange}
                         autoComplete="off"
                       />
@@ -100,7 +246,9 @@ export default function CreateApartment() {
                           type="text"
                           spellCheck="false"
                           className="woocommerce-Input woocommerce-Input--text input-text"
-                          required=""
+                          defaultValue={
+                            props.props.isEdit ? state.data.size : ""
+                          }
                           placeholder="Size (m2)"
                           name="size"
                           id="size"
@@ -116,7 +264,9 @@ export default function CreateApartment() {
                           type="text"
                           spellCheck="false"
                           className="woocommerce-Input woocommerce-Input--text input-text"
-                          required=""
+                          defaultValue={
+                            props.props.isEdit ? state.data.price : ""
+                          }
                           placeholder="Price (usd)"
                           name="price"
                           id="price"
@@ -133,7 +283,9 @@ export default function CreateApartment() {
                         type="text"
                         spellCheck="false"
                         className="woocommerce-Input woocommerce-Input--text input-text"
-                        required=""
+                        defaultValue={
+                          props.props.isEdit ? state.data.capacity : ""
+                        }
                         placeholder="Capacity (person)"
                         name="capacity"
                         id="capacity"
@@ -148,8 +300,10 @@ export default function CreateApartment() {
                       <textarea
                         className="woocommerce-Input woocommerce-Input--text input-text"
                         spellCheck="false"
-                        required=""
-                        rows="4"
+                        defaultValue={
+                          props.props.isEdit ? state.data.description : ""
+                        }
+                        rows="5"
                         placeholder="Description"
                         name="description"
                         id="description"
@@ -174,6 +328,7 @@ export default function CreateApartment() {
                           <input
                             className="woocommerce-form__input woocommerce-form__input-checkbox"
                             name="pets"
+                            checked={props.props.isEdit && state.data.pets}
                             spellCheck="false"
                             type="checkbox"
                             id="pets"
@@ -185,6 +340,7 @@ export default function CreateApartment() {
                           <input
                             className="woocommerce-form__input woocommerce-form__input-checkbox"
                             name="breakfast"
+                            checked={props.props.isEdit && state.data.breakfast}
                             type="checkbox"
                             id="breakfast"
                             onChange={handleCheck}
@@ -194,6 +350,7 @@ export default function CreateApartment() {
                         <label className="woocommerce-form__label woocommerce-form__label-for-checkbox woocommerce-form-login__rememberme">
                           <input
                             className="woocommerce-form__input woocommerce-form__input-checkbox"
+                            checked={props.props.isEdit && state.data.featured}
                             name="featured"
                             type="checkbox"
                             id="featured"
@@ -210,9 +367,11 @@ export default function CreateApartment() {
                       <span className="password-input">
                         <textarea
                           className="woocommerce-Input woocommerce-Input--text input-text"
-                          required=""
+                          defaultValue={
+                            props.props.isEdit ? state.data.extras : ""
+                          }
                           spellCheck="false"
-                          rows="4"
+                          rows="5"
                           placeholder="Extras"
                           name="extras"
                           id="extras"
@@ -226,9 +385,9 @@ export default function CreateApartment() {
                         id="register"
                         name="register"
                         value="Register"
-                        onClick={handleSubmit}
+                        onClick={props.props.isEdit ? handleEdit : handleCreate}
                       >
-                        <span className="button__text">Create</span>
+                        <span className="button__text">Submit</span>
                       </button>
                     </p>
                   </form>

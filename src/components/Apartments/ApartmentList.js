@@ -13,9 +13,9 @@ AparmentList.propTypes = {
 export default function AparmentList({ products, ...other }) {
   return (
     <Grid container spacing={3} {...other}>
-      {products.map((product) => (
-        <Grid key={product.id} item xs={12} sm={6} md={3}>
-          <ApartmentCard product={product} />
+      {products?.map((product, index) => (
+        <Grid key={index} item xs={12} sm={6} md={3}>
+          <ApartmentCard key={index} product={product} />
         </Grid>
       ))}
     </Grid>

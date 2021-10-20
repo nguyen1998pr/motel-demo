@@ -11,18 +11,16 @@ export default class SingleApartment extends Component {
     super(props);
     console.log(this.props);
     this.state = {
+      id: this.props.match.params.id,
       apartmentName: this.props.match.params.apartmentName,
-      defaultBcg: defaultBcg
+      defaultBcg: defaultBcg,
     };
   }
   static contextType = ApartmentContext;
 
-  // componentDidMount() {
-  //   console.log(this.props);
-  // }
   render() {
     const { getApartment } = this.context;
-    const apartment = getApartment(this.state.apartmentName);
+    const apartment = getApartment(this.state.id);
 
     if (!apartment) {
       return (
@@ -35,7 +33,7 @@ export default class SingleApartment extends Component {
       );
     }
     const {
-      name,
+      apartmentName,
       description,
       capacity,
       size,
@@ -43,7 +41,7 @@ export default class SingleApartment extends Component {
       extras,
       breakfast,
       pets,
-      images
+      images,
     } = apartment;
     const [...defaultImages] = images;
     console.log(defaultImages);
@@ -51,7 +49,7 @@ export default class SingleApartment extends Component {
     return (
       <>
         <StyledHero img={images[0] || this.state.defaultBcg}>
-          <Banner title={`${name} apartment`}>
+          <Banner title={`${apartmentName}`}>
             <Link to="/apartments" className="btn-primary">
               back to apartments
             </Link>
@@ -60,7 +58,7 @@ export default class SingleApartment extends Component {
         <section className="single-apartment">
           <div className="single-apartment-images">
             {defaultImages.map((item, index) => (
-              <img key={index} src={item} alt={name} />
+              <img key={index} src={item} alt={apartmentName} />
             ))}
           </div>
           <div className="single-apartment-info">

@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { useState } from "react";
 // material
 import {
   Container,
@@ -17,8 +16,9 @@ import {
   ApartmentFilterSidebar,
 } from "../components/Apartments";
 import CreateApartment from "./CreateApartment";
+import * as apiServices from "../store/motel/services";
+
 //
-import PRODUCTS from "../_mocks_/products";
 import cancel from "../images/cancel.png";
 
 // ----------------------------------------------------------------------
@@ -38,7 +38,17 @@ export default function UserApartment() {
   const [state, setState] = useState({
     openFilter: false,
     openCreateApart: false,
+    apartmentList: [],
   });
+
+  useEffect(() => {
+    const request = apiServices.userApartment();
+    request
+      .then((res) => {
+        setState((s) => ({ ...s, apartmentList: res.data.obj }));
+      })
+      .catch((err) => {});
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -101,7 +111,7 @@ export default function UserApartment() {
           </Stack>
         </Stack>
 
-        <ApartmentList products={PRODUCTS} />
+        <ApartmentList products={state.apartmentList} />
       </Container>
       <Dialog
         open={state.openCreateApart}
@@ -117,7 +127,7 @@ export default function UserApartment() {
           />
         </DialogTitle>
         <DialogContent>
-          <CreateApartment />
+          <CreateApartment props={{ isAdd: true }} />
         </DialogContent>
       </Dialog>
     </>

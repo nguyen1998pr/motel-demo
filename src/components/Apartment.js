@@ -4,7 +4,7 @@ import defaultImg from "../images/apartment-1.jpeg";
 import PropTypes from "prop-types";
 import { memo } from "react";
 const Apartment = memo(({ apartment }) => {
-  const { name, apartmentName, images, price } = apartment;
+  const { id, apartmentName, images, price } = apartment;
   // console.log(name);
   return (
     <article className="apartment">
@@ -14,14 +14,11 @@ const Apartment = memo(({ apartment }) => {
           <h6>${price}</h6>
           <p>per month</p>
         </div>
-        <Link
-          to={`/apartments/${apartmentName}`}
-          className="btn-primary apartment-link"
-        >
+        <Link to={`/apartments/${id}`} className="btn-primary apartment-link">
           features
         </Link>
       </div>
-      <p className="apartment-info">{name}</p>
+      <p className="apartment-info">{apartmentName}</p>
     </article>
   );
 });

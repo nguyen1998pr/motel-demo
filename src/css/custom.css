@@ -90,9 +90,9 @@
   border: 1px solid #ccc;
   padding: 16px;
 }
-input[type="text"],
-input[type="email"],
-textarea {
+.woocommerce-form-row input[type="text"],
+.woocommerce-form-row input[type="email"],
+.woocommerce-form-row textarea {
   border: 1px solid #d9d9d9;
   background: #fff;
   padding: 10px;

@@ -13,3 +13,31 @@ export const userInfo = () => {
     headers: { Authorization: localStorage.getItem("token") },
   });
 };
+
+export const addApartment = (data) => {
+  return axiosMotel.post(`property/add`, data, {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};
+
+export const apartmentInfo = (id) => {
+  return axiosMotel.get(`property/edit/${id}`, "", {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};
+
+export const editApartment = (id, data) => {
+  return axiosMotel.patch(`property/edit/${id}`, data, {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};
+
+export const allApartment = () => {
+  return axiosMotel.get(`property/all`, "", {});
+};
+
+export const userApartment = () => {
+  return axiosMotel.get(`user/property`, "", {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};

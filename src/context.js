@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import * as apiServices from "./store/motel/services";
 import items from "./data";
 // import Client from "./Contentful";
 
@@ -19,52 +20,83 @@ export default class ApartmentProvider extends Component {
     minSize: 0,
     maxSize: 0,
     breakfast: false,
-    pets: false
+    pets: false,
   };
 
+  ApartmentList() {
+    const request = apiServices.allApartment();
+    request
+      .then((res) => {
+        let apartments = this.formatData(res.data.obj);
+        let featuredApartments = apartments.filter(
+          (apartment) => apartment.featured === true
+        );
+        //
+        let maxPrice = Math.max(...apartments.map((item) => item.price));
+        let maxSize = Math.max(...apartments.map((item) => item.size));
+        this.setState({
+          apartments,
+          featuredApartments,
+          sortedApartments: apartments,
+          loading: false,
+          //
+          price: maxPrice,
+          maxPrice,
+          maxSize,
+        });
+      })
+      .catch((err) => {});
+  }
+
   componentDidMount() {
-    // this.getData();
-    let apartments = this.formatData(items);
-    let featuredApartments = apartments.filter(apartment => apartment.featured === true);
-    //
-    let maxPrice = Math.max(...apartments.map(item => item.price));
-    let maxSize = Math.max(...apartments.map(item => item.size));
-    this.setState({
-      apartments,
-      featuredApartments,
-      sortedApartments: apartments,
-      loading: false,
-      //
-      price: maxPrice,
-      maxPrice,
-      maxSize
-    });
+    // // this.getData();
+    // let apartments = this.formatData(items);
+    // let featuredApartments = apartments.filter(
+    //   (apartment) => apartment.featured === true
+    // );
+    // //
+    // let maxPrice = Math.max(...apartments.map((item) => item.price));
+    // let maxSize = Math.max(...apartments.map((item) => item.size));
+    // this.setState({
+    //   apartments,
+    //   featuredApartments,
+    //   sortedApartments: apartments,
+    //   loading: false,
+    //   //
+    //   price: maxPrice,
+    //   maxPrice,
+    //   maxSize,
+    // });
+    this.ApartmentList();
   }
 
   formatData(items) {
-    let tempItems = items.map(item => {
-      let id = item.sys.id;
-      let images = item.fields.images.map(image => image.fields.file.url);
+    let tempItems = items.map((item) => {
+      //let id = item.sys.id;
+      let id = item._id;
+      let images = item.fields.images.map(
+        (image) => `http://localhost:8080/uploads/properties/${image.name}`
+      );
 
       let apartment = { ...item.fields, images, id };
       return apartment;
     });
     return tempItems;
   }
-  getApartment = apartmentName => {
+
+  getApartment = (id) => {
     let tempApartments = [...this.state.apartments];
-    const apartment = tempApartments.find(apartment => apartment.apartmentName === apartmentName);
+    const apartment = tempApartments.find((apartment) => apartment.id === id);
     return apartment;
   };
-  handleChange = event => {
+  handleChange = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
-    console.log(name, value);
 
     this.setState(
       {
-        [name]: value
+        [name]: value,
       },
       this.filterApartments
     );
@@ -78,7 +110,7 @@ export default class ApartmentProvider extends Component {
       minSize,
       maxSize,
       breakfast,
-      pets
+      pets,
     } = this.state;
 
     let tempApartments = [...apartments];
@@ -88,28 +120,38 @@ export default class ApartmentProvider extends Component {
     price = parseInt(price);
     // filter by type
     if (type !== "all") {
-      tempApartments = tempApartments.filter(apartment => apartment.type === type);
+      tempApartments = tempApartments.filter(
+        (apartment) => apartment.type === type
+      );
     }
     // filter by capacity
     if (capacity !== 1) {
-      tempApartments = tempApartments.filter(apartment => apartment.capacity >= capacity);
+      tempApartments = tempApartments.filter(
+        (apartment) => apartment.capacity >= capacity
+      );
     }
     // filter by price
-    tempApartments = tempApartments.filter(apartment => apartment.price <= price);
+    tempApartments = tempApartments.filter(
+      (apartment) => apartment.price <= price
+    );
     //filter by size
     tempApartments = tempApartments.filter(
-      apartment => apartment.size >= minSize && apartment.size <= maxSize
+      (apartment) => apartment.size >= minSize && apartment.size <= maxSize
     );
     //filter by breakfast
     if (breakfast) {
-      tempApartments = tempApartments.filter(apartment => apartment.breakfast === true);
+      tempApartments = tempApartments.filter(
+        (apartment) => apartment.breakfast === true
+      );
     }
     //filter by pets
     if (pets) {
-      tempApartments = tempApartments.filter(apartment => apartment.pets === true);
+      tempApartments = tempApartments.filter(
+        (apartment) => apartment.pets === true
+      );
     }
     this.setState({
-      sortedApartments: tempApartments
+      sortedApartments: tempApartments,
     });
   };
   render() {
@@ -118,7 +160,7 @@ export default class ApartmentProvider extends Component {
         value={{
           ...this.state,
           getApartment: this.getApartment,
-          handleChange: this.handleChange
+          handleChange: this.handleChange,
         }}
       >
         {this.props.children}
@@ -134,7 +176,7 @@ export function withApartmentConsumer(Component) {
   return function ConsumerWrapper(props) {
     return (
       <ApartmentConsumer>
-        {value => <Component {...props} context={value} />}
+        {(value) => <Component {...props} context={value} />}
       </ApartmentConsumer>
     );
   };
