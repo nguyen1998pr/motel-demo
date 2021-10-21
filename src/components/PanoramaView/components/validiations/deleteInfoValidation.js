@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { getCurrentScene } from "../../libs/react-pannellum/dist";
 
-const PostContactForm = async (
-  values: any,
-  successCallback: any,
-  errorCallback: any
-) => {
+const PostContactForm = async (values, successCallback, errorCallback) => {
   // do stuff
   // if successful
   if (true) successCallback();
@@ -14,40 +9,41 @@ const PostContactForm = async (
 
 const initialFormValues = {
   sceneName: "",
+  hotSpotName: "",
   formSubmitted: false,
   success: false,
 };
 
 export const useFormControls = (props) => {
   const [values, setValues] = useState(initialFormValues);
-  const [errors, setErrors] = useState({} as any);
-  const currentScene: string = getCurrentScene()?.toString();
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setValues(initialFormValues);
     setErrors({});
   }, [props.open]);
 
-  const validate: any = (fieldValues = values) => {
-    let temp: any = { ...errors };
+  useEffect(() => {
+    setErrors((s) => ({ ...s, hotSpotName: "" }));
+  }, [props.sceneID]);
 
-    if ("sceneName" in fieldValues) {
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
+
+    if ("sceneName" in fieldValues)
       temp.sceneName = fieldValues.sceneName ? "" : "This field is required.";
-      if (fieldValues.sceneName) {
-        temp.sceneName =
-          fieldValues.sceneName.toString() !== currentScene
-            ? ""
-            : "Can not delete this scene";
-      }
-    }
+
+    if ("hotSpotName" in fieldValues)
+      temp.hotSpotName = fieldValues.hotSpotName
+        ? ""
+        : "This field is required.";
 
     setErrors({
       ...temp,
     });
   };
 
-  const handleInputValue = (e: any) => {
-    console.log(e.target);
+  const handleInputValue = (e) => {
     const { name, value } = e.target;
     setValues({
       ...values,
@@ -74,12 +70,14 @@ export const useFormControls = (props) => {
 
   const formIsValid = (fieldValues = values) => {
     const isValid =
-      fieldValues.sceneName && Object.values(errors).every((x) => x === "");
+      fieldValues.sceneName &&
+      fieldValues.hotSpotName &&
+      Object.values(errors).every((x) => x === "");
 
     return isValid;
   };
 
-  const handleFormSubmit = async (e: any) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const isValid =
       Object.values(errors).every((x) => x === "") && formIsValid();

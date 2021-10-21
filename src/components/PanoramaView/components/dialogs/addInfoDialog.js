@@ -11,28 +11,10 @@ import { addHotSpot } from "../../libs/react-pannellum/dist";
 import { useFormControls } from "../validiations/addInfoValidation";
 import { helperTextStyles } from "../styles";
 
-interface types {
-  title: string;
-}
-
-const types: types[] = [{ title: "info" }, { title: "scene" }];
-
-interface Props {
-  hotSpot: {
-    id: string;
-    sceneId: string;
-    pitch: string;
-    type: string;
-    yaw: string;
-    text: string;
-    URL: string;
-  };
-  isSceneType: boolean;
-  isInfoType: boolean;
-}
+const types = [{ title: "info" }, { title: "scene" }];
 
 export default function AddInfoDialog(props) {
-  const [state, setState] = useState<Props>({
+  const [state, setState] = useState({
     hotSpot: {
       id: "",
       sceneId: "",
@@ -114,7 +96,7 @@ export default function AddInfoDialog(props) {
             options={types}
             onSelect={handleInputValue}
             getOptionLabel={(option) => option.title}
-            onChange={(event: any, value: any) => {
+            onChange={(event, value) => {
               setState((s) => ({
                 ...s,
                 hotSpot: {
@@ -176,8 +158,8 @@ export default function AddInfoDialog(props) {
               id="scenes"
               options={props.fullScenesInformation}
               onSelect={handleInputValue}
-              getOptionLabel={(option: object) => Object.keys(option)[0]}
-              onChange={(event: any, value: any) =>
+              getOptionLabel={(option) => Object.keys(option)[0]}
+              onChange={(event, value) =>
                 setState((s) => ({
                   ...s,
                   hotSpot: {

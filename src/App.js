@@ -21,7 +21,11 @@ function App() {
         <Route exact path="/apartments/" component={Apartments} />
         <Route exact path="/user/apartments" component={UserApartment} />
         <Route exact path="/apartments/:id" component={SingleApartment} />
-        <Route exact path="/user/apartments/panorama" component={Mainpage} />
+        <Route
+          exact
+          path="/user/apartments/:id/panorama"
+          component={Mainpage}
+        />
         <Route component={Error} />
       </Switch>
     </>

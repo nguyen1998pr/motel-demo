@@ -11,32 +11,8 @@ import Button from "@mui/material/Button";
 import { useFormControls } from "../validiations/deleteInfoValidation";
 import { helperTextStyles } from "../styles";
 
-interface Props {
-  scene: {
-    // use to save / retrieve config of scene
-    sceneId: string;
-    config: {
-      type: string;
-      text: string;
-      title: string;
-      author: string;
-      imageSource: string;
-    };
-  };
-  hotSpot: {
-    // use to save config of hotSpot
-    id: string;
-    sceneId: string;
-    pitch: string;
-    type: string;
-    yaw: string;
-    text: string;
-    URL: string;
-  };
-}
-
 export default function DeleteInfoDialog(props) {
-  const [state, setState] = useState<Props>({
+  const [state, setState] = useState({
     scene: {
       // use to save / retrieve config of scene
       sceneId: "",
@@ -86,20 +62,20 @@ export default function DeleteInfoDialog(props) {
           <Autocomplete
             id="scenes"
             options={props.fullScenesInformation}
-            getOptionLabel={(option: object) => Object.keys(option)[0]}
-            onChange={(event: any, value: any) => {
+            getOptionLabel={(option) => Object.keys(option)[0]}
+            onChange={(event, value) => {
               handleInputValue({
                 target: {
                   name: "sceneName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({
                 ...s,
-                scene: value ? Object.values(value as object)[0] : {},
+                scene: value ? Object.values(value)[0] : {},
                 hotSpot: {
                   ...s.hotSpot,
-                  sceneId: value ? Object.keys(value as object)[0] : "",
+                  sceneId: value ? Object.keys(value)[0] : "",
                 },
               }));
             }}
@@ -132,11 +108,11 @@ export default function DeleteInfoDialog(props) {
             id="hotspot"
             options={state.scene["hotSpots"] ? state.scene["hotSpots"] : []}
             getOptionLabel={(option) => option.id}
-            onChange={(event: any, value: any) => {
+            onChange={(event, value) => {
               handleInputValue({
                 target: {
                   name: "hotSpotName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({

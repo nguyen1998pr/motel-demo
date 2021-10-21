@@ -17,30 +17,8 @@ import { helperTextStyles } from "../styles";
 import { defaultConfig } from "../../views/default-config";
 import Button from "@mui/material/Button";
 
-interface Props {
-  scene: {
-    // use to save / retrieve config of scene
-    type: string;
-    text: string;
-    title: string;
-    author: string;
-    imageSource: string;
-    config: object;
-  };
-  hotSpot: {
-    // use to save config of hotSpot
-    id: string;
-    sceneId: string;
-    pitch: string;
-    type: string;
-    yaw: string;
-    text: string;
-    URL: string;
-  };
-}
-
 export default function EditSceneDialog(props) {
-  const [state, setState] = useState<Props>({
+  const [state, setState] = useState({
     scene: {
       // use to save / retrieve config of scene
       type: "equirectangular",
@@ -116,20 +94,20 @@ export default function EditSceneDialog(props) {
           <Autocomplete
             id="scene"
             options={props.fullScenesInformation}
-            getOptionLabel={(option: object) => Object.keys(option)[0]}
-            onChange={(event, value: any) => {
+            getOptionLabel={(option) => Object.keys(option)[0]}
+            onChange={(event, value) => {
               handleInputValue({
                 target: {
                   name: "sceneName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({
                 ...s,
-                scene: value ? Object.values(value as object)[0] : {},
+                scene: value ? Object.values(value)[0] : {},
                 hotSpot: {
                   ...s.hotSpot,
-                  sceneId: value ? Object.keys(value as object)[0] : "",
+                  sceneId: value ? Object.keys(value)[0] : "",
                 },
               }));
             }}

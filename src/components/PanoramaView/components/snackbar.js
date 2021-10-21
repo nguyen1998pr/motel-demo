@@ -4,11 +4,11 @@ import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import { Theme } from "@mui/material/styles";
 import { makeStyles } from "@mui/styles";
 
-function Alert(props: AlertProps) {
+function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     "& > * + *": {
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function CustomizedSnackbars(props) {
   const classes = useStyles();
 
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }

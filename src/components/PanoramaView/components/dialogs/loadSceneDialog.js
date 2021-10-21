@@ -6,37 +6,13 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { loadScene } from "../../libs/react-pannellum/dist";
 import Button from "@mui/material/Button";
-import { removeScene } from "../../libs/react-pannellum/dist";
-import { useFormControls } from "../validiations/deleteSceneValidation";
+import { useFormControls } from "../validiations/loadSceneValidation";
 import { helperTextStyles } from "../styles";
 
-interface Props {
-  scene: {
-    // use to save / retrieve config of scene
-    sceneId: string;
-    config: {
-      type: string;
-      text: string;
-      title: string;
-      author: string;
-      imageSource: string;
-    };
-  };
-  hotSpot: {
-    // use to save config of hotSpot
-    id: string;
-    sceneId: string;
-    pitch: string;
-    type: string;
-    yaw: string;
-    text: string;
-    URL: string;
-  };
-}
-
-export default function DeleteSceneDialog(props) {
-  const [state, setState] = useState<Props>({
+export default function LoadSceneDialog(props) {
+  const [state, setState] = useState({
     scene: {
       // use to save / retrieve config of scene
       sceneId: "",
@@ -66,9 +42,9 @@ export default function DeleteSceneDialog(props) {
       sceneID: state.hotSpot["sceneId"],
     });
 
-  const onDeleteSene = () => {
-    removeScene(state.hotSpot["sceneId"]);
-    props.close(3, "Delete Scene Successful !");
+  const onLoadScene = () => {
+    loadScene(state.hotSpot["sceneId"]);
+    props.close(3);
   };
 
   return (
@@ -77,30 +53,29 @@ export default function DeleteSceneDialog(props) {
       onClose={() => props.close(3)}
       aria-labelledby="form-dialog-title"
     >
-      <form id="my-delete-scene">
-        <DialogTitle id="form-dialog-title">Delete Scene</DialogTitle>
+      <form id="my-load-scene">
+        <DialogTitle id="form-dialog-title">Load Scene</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To delete Scene, choice Scene Name. ( Note that you cannot delete
-            the current scene )
+            To Load Scene, choice Scene Name.
           </DialogContentText>
           <Autocomplete
-            id="scene"
+            id="scenes"
             options={props.fullScenesInformation}
-            getOptionLabel={(option: object) => Object.keys(option)[0]}
-            onChange={(event, value: any) => {
+            getOptionLabel={(option) => Object.keys(option)[0]}
+            onChange={(event, value) => {
               handleInputValue({
                 target: {
                   name: "sceneName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({
                 ...s,
-                scene: value ? Object.values(value as object)[0] : {},
+                scene: value ? Object.values(value)[0] : {},
                 hotSpot: {
                   ...s.hotSpot,
-                  sceneId: value ? Object.keys(value as object)[0] : "",
+                  sceneId: value ? Object.keys(value)[0] : "",
                 },
               }));
             }}
@@ -110,9 +85,9 @@ export default function DeleteSceneDialog(props) {
                 label="Scene Name"
                 variant="outlined"
                 margin="dense"
-                style={{ marginTop: "15px", marginBottom: "10px" }}
                 name="sceneName"
                 FormHelperTextProps={{ classes: helperTextStyles() }}
+                style={{ marginTop: "15px", marginBottom: "11px" }}
                 error={errors["sceneName"]?.length > 0}
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
@@ -135,10 +110,10 @@ export default function DeleteSceneDialog(props) {
           </Button>
           <Button
             disabled={!formIsValid()}
-            onClick={() => onDeleteSene()}
+            onClick={() => onLoadScene()}
             color="primary"
           >
-            Delete
+            Load
           </Button>
         </DialogActions>
       </form>

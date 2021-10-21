@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAllScenes } from "../../libs/react-pannellum/dist";
+// import { getCurrentScene } from "../../libs/react-pannellum";
 
-const PostContactForm = async (
-  values: any,
-  successCallback: any,
-  errorCallback: any
-) => {
+const PostContactForm = async (values, successCallback, errorCallback) => {
   // do stuff
   // if successful
   if (true) successCallback();
@@ -23,43 +19,35 @@ const initialFormValues = {
 
 export const useFormControls = (props) => {
   const [values, setValues] = useState(initialFormValues);
-  const [errors, setErrors] = useState({} as any);
-  const keyArray = getAllScenes()
-    ? getAllScenes().map((value, index) => {
-        return Object.keys(value)[0];
-      })
-    : [];
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setValues(initialFormValues);
     setErrors({});
   }, [props.open]);
 
-  const validate: any = (fieldValues = values) => {
-    let temp: any = { ...errors };
+  useEffect(() => {
+    setErrors({});
+  }, [props.sceneID]);
 
-    if ("sceneID" in fieldValues) {
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
+
+    if ("sceneID" in fieldValues)
       temp.sceneID = fieldValues.sceneID ? "" : "This field is required.";
-      if (fieldValues.sceneID) {
-        temp.sceneID =
-          keyArray?.findIndex((value) => value === fieldValues.sceneID) < 0
-            ? ""
-            : "This Scene ID already exists";
-      }
-    }
 
     if ("imageSource" in fieldValues) {
       temp.imageSource = fieldValues.imageSource
         ? ""
         : "This field is required.";
-      // if (fieldValues.imageSource) {
-      //   temp.imageSource =
-      //     /(http[s]*:\/\/)([a-z\-_0-9\/.]+)\.([a-z.]{2,3})\/([a-z0-9\-_\/._~:?#\[\]@!$&'()*+,;=%]*)([a-z0-9]+\.)(jpg|jpeg|png)/i.test(
-      //       fieldValues.imageSource
-      //     )
-      //       ? ""
-      //       : "Image Link is not valid";
-      // }
+      if (fieldValues.imageSource) {
+        temp.imageSource =
+          /(http[s]*:\/\/)([a-z\-_0-9\/.]+)\.([a-z.]{2,3})\/([a-z0-9\-_\/._~:?#\[\]@!$&'()*+,;=%]*)([a-z0-9]+\.)(jpg|jpeg|png)/i.test(
+            fieldValues.imageSource
+          )
+            ? ""
+            : "Image Link is not valid";
+      }
     }
 
     if ("sceneName" in fieldValues)
@@ -73,7 +61,7 @@ export const useFormControls = (props) => {
     });
   };
 
-  const handleInputValue = (e: any) => {
+  const handleInputValue = (e) => {
     const { name, value } = e.target;
     setValues({
       ...values,
@@ -109,7 +97,7 @@ export const useFormControls = (props) => {
     return isValid;
   };
 
-  const handleFormSubmit = async (e: any) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const isValid =
       Object.values(errors).every((x) => x === "") && formIsValid();

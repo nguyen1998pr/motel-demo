@@ -22,6 +22,7 @@ import DeleteSceneDialog from "../components/dialogs/deleteSceneDialog";
 import LoadSceneDialog from "../components/dialogs/loadSceneDialog";
 import EditInfoDialog from "../components/dialogs/editInfoDialog";
 import EditSceneDialog from "../components/dialogs/editSceneDialog";
+import UploadPanorama from "../components/dialogs/uploadPanoDialog";
 import Button from "@mui/material/Button";
 import { saveAs } from "file-saver";
 import { initialState, pinCusor } from "./default-config";
@@ -126,6 +127,7 @@ export default function Mainpage() {
     isEditScene: false,
     isDeleteInfo: false, // use to open / close "Delete Hotspot" Dialog
     isDeleteScene: false, // use to open / close "Delete Scene" Dialog
+    isUploadPano: false,
     isLoadConfig: false,
     loadState: false,
     config: {
@@ -317,6 +319,10 @@ export default function Mainpage() {
     }));
   };
 
+  const isUploadPano = (data, index) => {
+    setState((s) => ({ ...s, isUploadPano: data }));
+  };
+
   const autoRotate = (value) => {
     value ? startAutoRotate() : stopAutoRotate();
   };
@@ -405,6 +411,14 @@ export default function Mainpage() {
                 CREATE PANORAMA VIEW
               </Typography>
               <Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => isUploadPano(true)}
+                >
+                  Upload Image
+                </Button>
+                <> </>
                 <Button
                   variant="contained"
                   color="primary"
@@ -541,6 +555,7 @@ export default function Mainpage() {
               close={handleDialogClose}
               fullScenesInformation={state.fullScenesInformation}
             />
+            <UploadPanorama open={state.isUploadPano} close={isUploadPano} />
             <CustomizedSnackbars
               open={state.snackbarAction["isOpen"]}
               type={state.snackbarAction["type"]}

@@ -32,6 +32,12 @@ export const editApartment = (id, data) => {
   });
 };
 
+export const editPanoImage = (id, data) => {
+  return axiosMotel.patch(`property/edit/${id}/panorama`, data, {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};
+
 export const allApartment = () => {
   return axiosMotel.get(`property/all`, "", {});
 };

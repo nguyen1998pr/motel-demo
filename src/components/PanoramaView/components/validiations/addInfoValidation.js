@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 
-const PostContactForm = async (
-  values: any,
-  successCallback: any,
-  errorCallback: any
-) => {
+const PostContactForm = async (values, successCallback, errorCallback) => {
   // do stuff
   // if successful
   if (true) successCallback();
@@ -21,7 +17,7 @@ const initialFormValues = {
 
 export const useFormControls = (props) => {
   const [values, setValues] = useState(initialFormValues);
-  const [errors, setErrors] = useState({} as any);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setValues(initialFormValues);
@@ -36,8 +32,8 @@ export const useFormControls = (props) => {
     }
   }, [props.isScene, props.isInfo]);
 
-  const validate: any = (fieldValues = values) => {
-    let temp: any = { ...errors };
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
 
     if ("title" in fieldValues)
       temp.title = fieldValues.title ? "" : "This field is required.";
@@ -53,7 +49,7 @@ export const useFormControls = (props) => {
     });
   };
 
-  const handleInputValue = (e: any) => {
+  const handleInputValue = (e) => {
     const { name, value } = e.target;
     setValues({
       ...values,
@@ -88,7 +84,7 @@ export const useFormControls = (props) => {
     return isValid;
   };
 
-  const handleFormSubmit = async (e: any) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const isValid =
       Object.values(errors).every((x) => x === "") && formIsValid();

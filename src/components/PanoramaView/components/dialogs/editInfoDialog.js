@@ -15,11 +15,7 @@ import Button from "@mui/material/Button";
 import { useFormControls } from "../validiations/deleteInfoValidation";
 import { helperTextStyles } from "../styles";
 
-interface types {
-  title: string;
-}
-
-const types: types[] = [{ title: "info" }, { title: "scene" }];
+const types = [{ title: "info" }, { title: "scene" }];
 
 export default function EditInfoDialog(props) {
   const [state, setState] = useState({
@@ -129,20 +125,20 @@ export default function EditInfoDialog(props) {
           <Autocomplete
             id="scenes"
             options={props.fullScenesInformation}
-            getOptionLabel={(option: object) => Object.keys(option)[0]}
-            onChange={(event: any, value: any) => {
+            getOptionLabel={(option) => Object.keys(option)[0]}
+            onChange={(event, value) => {
               handleInputValue({
                 target: {
                   name: "sceneName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({
                 ...s,
-                scene: value ? Object.values(value as object)[0] : {},
+                scene: value ? Object.values(value)[0] : {},
                 hotSpot: {
                   ...s.hotSpot,
-                  sceneId: value ? Object.keys(value as object)[0] : "",
+                  sceneId: value ? Object.keys(value)[0] : "",
                 },
               }));
             }}
@@ -175,7 +171,7 @@ export default function EditInfoDialog(props) {
             id="hotspot"
             options={state.scene["hotSpots"] ? state.scene["hotSpots"] : []}
             getOptionLabel={(option) => option.id}
-            onChange={(event: any, value: any) => {
+            onChange={(event, value) => {
               if (
                 state.hotSpot["id"] &&
                 state.scene["hotSpots"]?.find(
@@ -189,7 +185,7 @@ export default function EditInfoDialog(props) {
               handleInputValue({
                 target: {
                   name: "hotSpotName",
-                  value: value ? Object.keys(value as object)[0] : "",
+                  value: value ? Object.keys(value)[0] : "",
                 },
               });
               setState((s) => ({
@@ -243,7 +239,7 @@ export default function EditInfoDialog(props) {
             options={types}
             onSelect={handleInputValue}
             getOptionLabel={(option) => option.title}
-            onChange={(event: any, value: any) => {
+            onChange={(event, value) => {
               setState((s) => ({
                 ...s,
                 hotSpot: {
@@ -293,8 +289,8 @@ export default function EditInfoDialog(props) {
               }}
               options={props.fullScenesInformation}
               onSelect={handleInputValue}
-              getOptionLabel={(option: object) => Object.keys(option)[0]}
-              onChange={(event: any, value: any) =>
+              getOptionLabel={(option) => Object.keys(option)[0]}
+              onChange={(event, value) =>
                 setState((s) => ({
                   ...s,
                   hotSpot: {
@@ -328,13 +324,13 @@ export default function EditInfoDialog(props) {
             key={`des${
               state.hotSpot["id"] &&
               state.scene["hotSpots"]?.find(
-                (value) => value?.id === state.hotSpot["id"]!
+                (value) => value?.id === state.hotSpot["id"]
               )["text"]
             }`}
             defaultValue={
               state.hotSpot["id"] &&
               state.scene["hotSpots"]?.find(
-                (value) => value?.id === state.hotSpot["id"]!
+                (value) => value?.id === state.hotSpot["id"]
               )["text"]
             }
             style={{ marginTop: "15px", marginBottom: "10px" }}

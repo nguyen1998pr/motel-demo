@@ -19,6 +19,7 @@ const useStyles = makeStyles({
     overflow: "auto",
     overflowX: "hidden",
     maxHeight: "500px",
+    justifyContent: "space-around",
   },
 });
 
@@ -30,6 +31,7 @@ export default function CreateApartment(props) {
       featured: false,
       breakfast: false,
       images: [],
+      panoImages: [],
     },
     notify: { vertical: "top", horizontal: "right" },
   });
@@ -75,13 +77,6 @@ export default function CreateApartment(props) {
     setState((s) => ({
       ...s,
       images: image,
-    }));
-  };
-
-  const handlePanoImage = (image) => {
-    setState((s) => ({
-      ...s,
-      panoImages: image,
     }));
   };
 
@@ -132,13 +127,10 @@ export default function CreateApartment(props) {
                   }}
                 >
                   <h2>Normal Images</h2>
-                  <div
-                  // style={{
-                  //   height: "250px",
-                  // }}
-                  >
-                    {(props.props.isAdd || !state.data.images.length) && (
+                  <div>
+                    {props.props.isAdd || !state.data.images.length ? (
                       <DropzoneArea
+                        acceptedFiles={["image/*"]}
                         filesLimit={10}
                         name="images"
                         showAlerts={false}
@@ -154,9 +146,10 @@ export default function CreateApartment(props) {
                           container: classes.container,
                         }}
                       />
-                    )}
-                    {state.data.images.length && props.props.isEdit && (
+                    ) : null}
+                    {state.data.images.length && props.props.isEdit ? (
                       <DropzoneArea
+                        acceptedFiles={["image/*"]}
                         filesLimit={10}
                         name="images"
                         initialFiles={[...state.data.images]}
@@ -173,7 +166,7 @@ export default function CreateApartment(props) {
                           container: classes.container,
                         }}
                       />
-                    )}
+                    ) : null}
                   </div>
                   {/* <h2 style={{ marginTop: "25px" }}>Panorama Images</h2>
                   <div

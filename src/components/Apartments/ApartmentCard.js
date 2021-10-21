@@ -91,7 +91,10 @@ export default function RecipeReviewCard({ product }) {
               <DeleteIcon />
             </IconButton>
           </Tooltip>
-          <Link to={`/user/apartments/panorama`} style={{ marginLeft: "auto" }}>
+          <Link
+            to={`/user/apartments/${product._id}/panorama`}
+            style={{ marginLeft: "auto" }}
+          >
             <Tooltip title="Add Panorama View">
               <IconButton aria-label="addPanorama">
                 <AddPhotoAlternateIcon />
