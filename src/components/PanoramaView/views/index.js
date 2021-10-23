@@ -392,6 +392,11 @@ export default function Mainpage() {
 
   const exportConfig = (event) => {
     event.preventDefault();
+
+    const btn = document.querySelector(".woocommerce-Button");
+    document.getElementById("save").disabled = true;
+    btn.classList.add("button--loading");
+
     const config = getAllScenes();
     const formData = new FormData();
     const data = {
@@ -401,7 +406,22 @@ export default function Mainpage() {
     console.log(data);
     formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
     const request = apiServices.editPanoImage(id, formData);
-    request.then((res) => {}).catch((err) => {});
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          setState((s) => ({
+            ...s,
+            notify: {
+              ...s.notify,
+              open: true,
+              message: "Panorama View Was Saved!",
+              type: "success",
+            },
+          }));
+        }, 2000);
+      })
+      .catch((err) => {});
   };
 
   const handleNotify = () => {
@@ -455,8 +475,10 @@ export default function Mainpage() {
                   variant="contained"
                   color="primary"
                   onClick={exportConfig}
+                  className="woocommerce-Button button"
+                  id="save"
                 >
-                  Save
+                  <span className="button__mui">Save</span>
                 </Button>
               </Box>
             </Toolbar>

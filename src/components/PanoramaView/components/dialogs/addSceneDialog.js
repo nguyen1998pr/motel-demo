@@ -223,7 +223,7 @@ export default function AddSceneDialog(props) {
               <DialogActions>
                 <Button
                   size="small"
-                  variant="outlined"
+                  variant="contained"
                   color="success"
                   onClick={handleSelectImage}
                 >

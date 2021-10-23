@@ -61,7 +61,7 @@ export default function UploadPanorama(props) {
     const formData = new FormData();
     const data = {
       ...state.data,
-      panoImages: [{ name: "" }],
+      panoImages: [],
     };
     formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
     state.panoImages.map((image) => {
