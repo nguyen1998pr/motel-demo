@@ -29,22 +29,20 @@ const useStyles = makeStyles({
 export default function UploadPanorama(props) {
   const classes = useStyles();
   const id = window.location.pathname.split("/")[3];
+  const imgSrc = "http://10.30.176.132:8080/uploads/properties/";
   const [state, setState] = useState({ data: {}, panoImages: [] });
 
   useEffect(() => {
-    const request = apiServices.apartmentInfo(id);
-    request
-      .then((res) => {
-        setState((s) => ({
-          ...s,
-          data: {
-            ...s.data,
-            ...res.data.prop.fields,
-          },
-        }));
-      })
-      .catch((err) => {});
-  }, []);
+    setState((s) => ({
+      ...s,
+      data: {
+        ...props.apartmentInfo,
+        panoImages: props.apartmentInfo.panoImages?.map((item) => {
+          return `${imgSrc + item.name}`;
+        }),
+      },
+    }));
+  }, [props.apartmentInfo]);
 
   const handlePanoImage = (image) => {
     setState((s) => ({
@@ -55,9 +53,15 @@ export default function UploadPanorama(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const btn = document.querySelector(".woocommerce-Button");
+    document.getElementById("submit").disabled = true;
+    btn.classList.add("button--loading");
+
     const formData = new FormData();
     const data = {
       ...state.data,
+      panoImages: [{ name: "" }],
     };
     formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
     state.panoImages.map((image) => {
@@ -65,7 +69,19 @@ export default function UploadPanorama(props) {
     });
 
     const request = apiServices.editPanoImage(id, formData);
-    request.then((res) => {}).catch((err) => {});
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          props.close({
+            open: true,
+            message: "Image Upload Success!",
+            type: "success",
+            reload: true,
+          });
+        }, 2000);
+      })
+      .catch((err) => {});
   };
 
   return (
@@ -78,28 +94,51 @@ export default function UploadPanorama(props) {
       disable
     >
       <div style={{ padding: "20px" }}>
-        <DropzoneArea
-          acceptedFiles={["image/*"]}
-          filesLimit={10}
-          name="panoImages"
-          showAlerts={false}
-          onChange={handlePanoImage}
-          showPreviews
-          showPreviewsInDropzone={false}
-          onAdd={(fileObjs) => console.log("Added Files:", fileObjs)}
-          dropzoneClass={classes.dropzone}
-          previewGridClasses={{
-            item: classes.item,
-            container: classes.container,
-          }}
-        />
+        {state.data.panoImages?.length ? (
+          <DropzoneArea
+            acceptedFiles={["image/*"]}
+            filesLimit={10}
+            initialFiles={state.data.panoImages}
+            name="panoImages"
+            onChange={handlePanoImage}
+            showPreviews
+            showPreviewsInDropzone={false}
+            onAdd={(fileObjs) => console.log("Added Files:", fileObjs)}
+            dropzoneClass={classes.dropzone}
+            previewGridClasses={{
+              item: classes.item,
+              container: classes.container,
+            }}
+          />
+        ) : (
+          <DropzoneArea
+            acceptedFiles={["image/*"]}
+            filesLimit={10}
+            name="panoImages"
+            onChange={handlePanoImage}
+            showPreviews
+            showPreviewsInDropzone={false}
+            onAdd={(fileObjs) => console.log("Added Files:", fileObjs)}
+            dropzoneClass={classes.dropzone}
+            previewGridClasses={{
+              item: classes.item,
+              container: classes.container,
+            }}
+          />
+        )}
       </div>
       <DialogActions>
         <Button onClick={() => props.close(false)} color="primary">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary">
-          Submit
+        <Button
+          onClick={handleSubmit}
+          color="success"
+          variant="contained"
+          className="woocommerce-Button button"
+          id="submit"
+        >
+          <span className="button__mui">Submit</span>
         </Button>
       </DialogActions>
     </Dialog>

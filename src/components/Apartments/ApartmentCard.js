@@ -15,6 +15,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import {
   Dialog,
   DialogTitle,
@@ -35,15 +37,40 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function RecipeReviewCard({ product }) {
-  const [state, setState] = useState({ openEditApart: false });
-  const host = "http://localhost:8080";
+  const [state, setState] = useState({
+    openEditApart: false,
+    notify: { vertical: "top", horizontal: "right" },
+  });
+  const host = "http://10.30.176.132:8080";
   const imagePath = "/uploads/properties/";
   const imageName = product.fields.images[0]?.name;
 
-  const handleEditApart = () => {
-    setState((s) => ({ ...s, openEditApart: !state.openEditApart }));
+  const handleEditApart = (data) => {
+    if (data.reload) {
+      window.location.reload();
+      setState((s) => ({
+        ...s,
+        openEditApart: !state.openEditApart,
+        notify: { ...s.notify, ...data },
+      }));
+    } else {
+      setState((s) => ({
+        openEditApart: !state.openEditApart,
+        notify: { vertical: "top", horizontal: "right" },
+      }));
+    }
   };
+
+  const handleNotify = () => {
+    setState((s) => ({ ...s, notify: { ...s.notify, open: false } }));
+  };
+
+  const { vertical, horizontal } = state.notify;
 
   return (
     <>
@@ -94,6 +121,11 @@ export default function RecipeReviewCard({ product }) {
           <Link
             to={`/user/apartments/${product._id}/panorama`}
             style={{ marginLeft: "auto" }}
+            onClick={() =>
+              setTimeout(() => {
+                window.location.reload(false);
+              }, 500)
+            }
           >
             <Tooltip title="Add Panorama View">
               <IconButton aria-label="addPanorama">
@@ -112,9 +144,23 @@ export default function RecipeReviewCard({ product }) {
           <img alt="" src={cancel} style={closeImg} onClick={handleEditApart} />
         </DialogTitle>
         <DialogContent>
-          <CreateApartment props={{ isEdit: true, apartId: product._id }} />
+          <CreateApartment
+            props={{ isEdit: true, apartId: product._id }}
+            callBack={handleEditApart}
+          />
         </DialogContent>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={state.notify.open}
+        onClose={handleNotify}
+        autoHideDuration={1500}
+        key={"top" + "right"}
+      >
+        <Alert severity={state.notify.type} sx={{ width: "100%" }}>
+          {state.notify.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

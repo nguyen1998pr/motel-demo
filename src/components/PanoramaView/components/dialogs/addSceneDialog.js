@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ImageGallery from "react-image-gallery";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -10,9 +11,12 @@ import { addScene } from "../../libs/react-pannellum/dist";
 import { defaultConfig } from "../../views/default-config";
 import { useFormControls } from "../validiations/addSceneValidation";
 import { helperTextStyles } from "../styles";
-import ImageGallery from "react-image-gallery";
+import * as apiServices from "../../../../store/motel/services";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function AddSceneDialog(props) {
+  const id = window.location.pathname.split("/")[3];
+  const imgSrc = "http://10.30.176.132:8080/uploads/properties/";
   const [state, setState] = useState({
     scene: {
       // use to save / retrieve config of scene
@@ -26,26 +30,45 @@ export default function AddSceneDialog(props) {
         hotSpots: [],
       },
     },
+    imageIndex: 0,
+    panoImage: [],
     fullScenesInformation: [],
   });
 
   useEffect(() => {
-    setState((s) => ({
-      scene: {
-        // use to save / retrieve config of scene
-        sceneId: "",
-        config: {
-          type: "equirectangular",
-          text: "",
-          title: "",
-          author: "",
-          imageSource: "",
-          hotSpots: [],
-        },
-      },
-      fullScenesInformation: [],
-    }));
+    const request = apiServices.apartmentInfo(id);
+    request
+      .then((res) => {
+        const formatData = res.data.prop.fields.panoImages?.map((item) => {
+          return {
+            original: `${imgSrc + item.name}`,
+            thumbnail: `${imgSrc + item.name}`,
+          };
+        });
+        setState((s) => ({
+          scene: {
+            // use to save / retrieve config of scene
+            sceneId: "",
+            config: {
+              type: "equirectangular",
+              text: "",
+              title: "",
+              author: "",
+              imageSource: "",
+              hotSpots: [],
+            },
+          },
+          imageIndex: 0,
+          panoImage: formatData,
+          fullScenesInformation: [],
+        }));
+      })
+      .catch((err) => {});
   }, [props.open]);
+
+  useEffect(() => {
+    console.log(state.scene.config.imageSource);
+  }, [state.imageIndex]);
 
   const { handleInputValue, handleFormSubmit, formIsValid, errors } =
     useFormControls({
@@ -91,37 +114,47 @@ export default function AddSceneDialog(props) {
     }
   };
 
+  const handle = (e) => {
+    setState((s) => ({
+      ...s,
+      imageIndex: e,
+    }));
+  };
+
+  const handleSelectImage = () => {
+    setState((s) => ({
+      ...s,
+      scene: {
+        ...s.scene,
+        config: {
+          ...s.scene["config"],
+          imageSource: state.panoImage[s.imageIndex]?.original,
+        },
+      },
+    }));
+  };
+
   return (
     <Dialog // this is Add Scene Dialog
       open={props.open}
       onClose={() => props.close(3)}
       aria-labelledby="form-dialog-title"
+      maxWidth="lg"
     >
       <form id="my-add-scene">
         <DialogTitle id="form-dialog-title">Add Scene</DialogTitle>
-        <DialogContent style={{ display: "flex" }}>
-          <div style={{ maxHeight: "200px" }}>
-            <ImageGallery
-              items={[
-                {
-                  original: "https://picsum.photos/id/1018/1000/600/",
-                  thumbnail: "https://picsum.photos/id/1018/250/150/",
-                },
-                {
-                  original: "https://picsum.photos/id/1015/1000/600/",
-                  thumbnail: "https://picsum.photos/id/1015/250/150/",
-                },
-                {
-                  original: "https://picsum.photos/id/1019/1000/600/",
-                  thumbnail: "https://picsum.photos/id/1019/250/150/",
-                },
-              ]}
-            />
-          </div>
-          <div>
+        <DialogContent
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          {state.panoImage.length ? (
+            <div style={{ maxWidth: "650px" }}>
+              <ImageGallery items={state.panoImage} onSlide={handle} />
+            </div>
+          ) : null}
+          <div style={{ maxWidth: "350px", padding: "20px" }}>
             <DialogContentText>
               To add scene, enter a scene id, scene name, then enter the source
-              of scene ( link ).
+              of scene.
             </DialogContentText>
             <TextField
               style={{ marginTop: "15px", marginBottom: "10px" }}
@@ -156,6 +189,7 @@ export default function AddSceneDialog(props) {
                 style={{ marginTop: "15px", marginBottom: "10px" }}
                 fullWidth
                 FormHelperTextProps={{ classes: helperTextStyles() }}
+                value={state.scene.config.imageSource}
                 variant="outlined"
                 margin="dense"
                 disabled
@@ -178,16 +212,21 @@ export default function AddSceneDialog(props) {
                     },
                   }));
                 }}
-                name="imageSource"
-                error={errors["imageSource"]?.length > 0}
-                onBlur={handleInputValue}
-                {...(errors["imageSource"] && {
-                  error: true,
-                  helperText: errors["imageSource"],
-                })}
+                // name="imageSource"
+                // error={errors["imageSource"]?.length > 0}
+                // onBlur={handleInputValue}
+                // {...(errors["imageSource"] && {
+                //   error: true,
+                //   helperText: errors["imageSource"],
+                // })}
               />
               <DialogActions>
-                <Button size="small" variant="outlined" color="success">
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="success"
+                  onClick={handleSelectImage}
+                >
                   Select
                 </Button>
               </DialogActions>

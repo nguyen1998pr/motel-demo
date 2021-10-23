@@ -197,7 +197,8 @@ img.mb-4 {
   transition: all 0.2s;
 }
 
-.button--loading .button__text {
+.button--loading .button__text,
+.button--loading .button__mui {
   visibility: hidden;
   opacity: 0;
 }

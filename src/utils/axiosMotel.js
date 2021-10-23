@@ -12,7 +12,7 @@ class AxiosClient {
     }
 
     this.axiosMotel = axios.create({
-      baseURL: "http://localhost:8080/",
+      baseURL: "http://10.30.176.132:8080/",
       headers: {
         "Content-Type": "application/json",
       },

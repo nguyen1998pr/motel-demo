@@ -13,8 +13,8 @@ import Container from "@mui/material/Container";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { MainListItems } from "../components/categories";
-import CustomizedSnackbars from "../components/snackbar";
-import { Alert, AlertTitle } from "@mui/material";
+import { Alert, AlertTitle, Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import AddInfoDialog from "../components/dialogs/addInfoDialog";
 import AddSceneDialog from "../components/dialogs/addSceneDialog";
 import DeleteInfoDialog from "../components/dialogs/deleteInfoDialog";
@@ -24,7 +24,6 @@ import EditInfoDialog from "../components/dialogs/editInfoDialog";
 import EditSceneDialog from "../components/dialogs/editSceneDialog";
 import UploadPanorama from "../components/dialogs/uploadPanoDialog";
 import Button from "@mui/material/Button";
-import { saveAs } from "file-saver";
 import { initialState, pinCusor } from "./default-config";
 import ReactPannellum, {
   mouseEventToCoords,
@@ -36,6 +35,7 @@ import ReactPannellum, {
   addScene,
   destroy,
 } from "../libs/react-pannellum/dist";
+import * as apiServices from "../../../store/motel/services";
 
 const drawerWidth = 240;
 
@@ -85,12 +85,16 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
+const Alerts = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 const mdTheme = createTheme();
 
 const types = [{ title: "info" }, { title: "scene" }];
 
 export default function Mainpage() {
-  let fileReader;
+  const id = window.location.pathname.split("/")[3];
 
   const [state, setState] = useState({
     isOpenDrawer: false, // use to open / close the sidebar content
@@ -134,6 +138,7 @@ export default function Mainpage() {
       sceneFadeDuration: 1000,
     }, // config for viewer
     fullScenesInformation: [], // use save / retrieve all scenes information / configs of this view
+    apartmentInfo: {},
     snackbarAction: {
       // use to show / hide notification
       isOpen: false,
@@ -141,7 +146,29 @@ export default function Mainpage() {
       type: "",
     },
     coordinates: {},
+    notify: { vertical: "top", horizontal: "right" },
   });
+
+  useEffect(() => {
+    setState((s) => ({
+      ...s,
+      fullScenesInformation: [],
+      isLoadConfig: true,
+      loadState: true,
+    }));
+    const request = apiServices.apartmentInfo(id);
+    request
+      .then((res) => {
+        setState((s) => ({
+          ...s,
+          apartmentInfo: res.data.prop.fields,
+          fullScenesInformation: res.data.prop.fields.scenePanoInfo?.length
+            ? res.data.prop.fields.scenePanoInfo
+            : [],
+        }));
+      })
+      .catch((err) => {});
+  }, []);
 
   useEffect(() => {
     changeMouseCursor(state);
@@ -161,6 +188,7 @@ export default function Mainpage() {
         fullScenesInformation: getAllScenes(),
       }));
     }
+    console.log(getAllScenes());
   }, [
     state.isAddInfo,
     state.isAddScene,
@@ -319,8 +347,21 @@ export default function Mainpage() {
     }));
   };
 
-  const isUploadPano = (data, index) => {
-    setState((s) => ({ ...s, isUploadPano: data }));
+  const isUploadPano = (data) => {
+    if (data.reload) {
+      window.location.reload();
+      setState((s) => ({
+        ...s,
+        isUploadPano: !s.isUploadPano,
+        notify: { ...s.notify, ...data },
+      }));
+    } else {
+      setState((s) => ({
+        ...s,
+        isUploadPano: !s.isUploadPano,
+        notify: { vertical: "top", horizontal: "right" },
+      }));
+    }
   };
 
   const autoRotate = (value) => {
@@ -349,34 +390,25 @@ export default function Mainpage() {
     }
   };
 
-  const handleFileRead = (e) => {
-    const content = fileReader.result;
-    destroy();
-    setState((s) => ({
-      ...s,
-      fullScenesInformation: JSON.parse(content),
-    }));
+  const exportConfig = (event) => {
+    event.preventDefault();
+    const config = getAllScenes();
+    const formData = new FormData();
+    const data = {
+      ...state.apartmentInfo,
+      scenePanoInfo: config,
+    };
+    console.log(data);
+    formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
+    const request = apiServices.editPanoImage(id, formData);
+    request.then((res) => {}).catch((err) => {});
   };
 
-  const handleFileChosen = (file) => {
-    if (file) {
-      setState((s) => ({
-        ...initialState,
-        fullScenesInformation: [],
-        isLoadConfig: true,
-        loadState: true,
-      }));
-      fileReader = new FileReader();
-      fileReader.onloadend = handleFileRead;
-      fileReader.readAsText(file);
-    }
+  const handleNotify = () => {
+    setState((s) => ({ ...s, notify: { ...s.notify, open: false } }));
   };
 
-  const exportConfig = () => {
-    const config = JSON.stringify(getAllScenes());
-    const blob = new Blob([config], { type: "text/plain;charset=utf-8" });
-    saveAs(blob, "Panorama Tour Data.txt");
-  };
+  const { vertical, horizontal } = state.notify;
 
   return (
     <div
@@ -422,23 +454,10 @@ export default function Mainpage() {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => exportConfig()}
+                  onClick={exportConfig}
                 >
                   Save
                 </Button>
-                <> </>
-                <input
-                  style={{ display: "none" }}
-                  id="contained-button-file"
-                  type="file"
-                  accept=".txt"
-                  onChange={(e) => handleFileChosen(e.target.files[0])}
-                />
-                <label htmlFor="contained-button-file">
-                  <Button variant="contained" color="primary" component="span">
-                    Load
-                  </Button>
-                </label>
               </Box>
             </Toolbar>
           </AppBar>
@@ -555,13 +574,22 @@ export default function Mainpage() {
               close={handleDialogClose}
               fullScenesInformation={state.fullScenesInformation}
             />
-            <UploadPanorama open={state.isUploadPano} close={isUploadPano} />
-            <CustomizedSnackbars
-              open={state.snackbarAction["isOpen"]}
-              type={state.snackbarAction["type"]}
-              message={state.snackbarAction["message"]}
-              onClose={onCloseSnackBar}
+            <UploadPanorama
+              open={state.isUploadPano}
+              close={isUploadPano}
+              apartmentInfo={state.apartmentInfo}
             />
+            <Snackbar
+              anchorOrigin={{ vertical, horizontal }}
+              open={state.notify.open}
+              onClose={handleNotify}
+              autoHideDuration={1500}
+              key={"top" + "right"}
+            >
+              <Alerts severity={state.notify.type} sx={{ width: "100%" }}>
+                {state.notify.message}
+              </Alerts>
+            </Snackbar>
           </Box>
         </Box>
       </ThemeProvider>

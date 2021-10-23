@@ -50,7 +50,7 @@ export default function CreateApartment(props) {
                 .join("\n"),
               images: res.data.prop.fields.images.map(
                 (item) =>
-                  `http://localhost:8080/uploads/properties/${item.name}`
+                  `http://10.30.176.132:8080/uploads/properties/${item.name}`
               ),
             },
           }));
@@ -82,6 +82,11 @@ export default function CreateApartment(props) {
 
   const handleCreate = (event) => {
     event.preventDefault();
+
+    const btn = document.querySelector(".woocommerce-Button");
+    document.getElementById("submit").disabled = true;
+    btn.classList.add("button--loading");
+
     const formData = new FormData();
     const data = {
       ...state.data,
@@ -93,11 +98,28 @@ export default function CreateApartment(props) {
     });
 
     const request = apiServices.addApartment(formData);
-    request.then((res) => {}).catch((err) => {});
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          props.callBack({
+            open: true,
+            message: "Apartment Created!",
+            type: "success",
+            reload: true,
+          });
+        }, 2000);
+      })
+      .catch((err) => {});
   };
 
   const handleEdit = (event) => {
     event.preventDefault();
+
+    const btn = document.querySelector(".woocommerce-Button");
+    document.getElementById("submit").disabled = true;
+    btn.classList.add("button--loading");
+
     const formData = new FormData();
     const data = {
       ...state.data,
@@ -110,7 +132,19 @@ export default function CreateApartment(props) {
     });
 
     const request = apiServices.editApartment(props.props.apartId, formData);
-    request.then((res) => {}).catch((err) => {});
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          props.callBack({
+            open: true,
+            message: "Apartment Modified!",
+            type: "success",
+            reload: true,
+          });
+        }, 2000);
+      })
+      .catch((err) => {});
   };
 
   return (
@@ -168,28 +202,6 @@ export default function CreateApartment(props) {
                       />
                     ) : null}
                   </div>
-                  {/* <h2 style={{ marginTop: "25px" }}>Panorama Images</h2>
-                  <div
-                    style={{
-                      height: "250px",
-                      overflow: "auto",
-                      overflowX: "hidden",
-                    }}
-                  >
-                    <DropzoneArea
-                      filesLimit={10}
-                      name="panoImages"
-                      showAlerts={false}
-                      onChange={handlePanoImage}
-                      showPreviews
-                      showPreviewsInDropzone={false}
-                      onAdd={(fileObjs) =>
-                        console.log("Added Files:", fileObjs)
-                      }
-                      dropzoneClass={classes.dropzone}
-                      previewGridClasses={{ item: classes.item }}
-                    />
-                  </div> */}
                 </div>
                 <div>
                   <h2>
@@ -375,9 +387,9 @@ export default function CreateApartment(props) {
                     <p className="form-row">
                       <button
                         className="woocommerce-Button button"
-                        id="register"
-                        name="register"
-                        value="Register"
+                        id="submit"
+                        name="submit"
+                        value="submit"
                         onClick={props.props.isEdit ? handleEdit : handleCreate}
                       >
                         <span className="button__text">Submit</span>

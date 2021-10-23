@@ -49,24 +49,6 @@ export default class ApartmentProvider extends Component {
   }
 
   componentDidMount() {
-    // // this.getData();
-    // let apartments = this.formatData(items);
-    // let featuredApartments = apartments.filter(
-    //   (apartment) => apartment.featured === true
-    // );
-    // //
-    // let maxPrice = Math.max(...apartments.map((item) => item.price));
-    // let maxSize = Math.max(...apartments.map((item) => item.size));
-    // this.setState({
-    //   apartments,
-    //   featuredApartments,
-    //   sortedApartments: apartments,
-    //   loading: false,
-    //   //
-    //   price: maxPrice,
-    //   maxPrice,
-    //   maxSize,
-    // });
     this.ApartmentList();
   }
 
@@ -75,7 +57,7 @@ export default class ApartmentProvider extends Component {
       //let id = item.sys.id;
       let id = item._id;
       let images = item.fields.images.map(
-        (image) => `http://localhost:8080/uploads/properties/${image.name}`
+        (image) => `http://10.30.176.132:8080/uploads/properties/${image.name}`
       );
 
       let apartment = { ...item.fields, images, id };
@@ -89,6 +71,16 @@ export default class ApartmentProvider extends Component {
     const apartment = tempApartments.find((apartment) => apartment.id === id);
     return apartment;
   };
+
+  updateApartment = (id, value) => {
+    let tempApartments = [...this.state.apartments];
+    const index = tempApartments.findIndex((obj) => obj.id === id);
+    const arr = [{ ...value }];
+    tempApartments[index] = this.formatData(arr);
+    console.log("aaaaaa", tempApartments);
+    this.setState((s) => ({ ...s, apartments: tempApartments }));
+  };
+
   handleChange = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
@@ -101,6 +93,7 @@ export default class ApartmentProvider extends Component {
       this.filterApartments
     );
   };
+
   filterApartments = () => {
     let {
       apartments,
@@ -154,6 +147,7 @@ export default class ApartmentProvider extends Component {
       sortedApartments: tempApartments,
     });
   };
+
   render() {
     return (
       <ApartmentContext.Provider
@@ -161,6 +155,7 @@ export default class ApartmentProvider extends Component {
           ...this.state,
           getApartment: this.getApartment,
           handleChange: this.handleChange,
+          updateApartment: this.updateApartment,
         }}
       >
         {this.props.children}

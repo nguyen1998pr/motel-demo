@@ -9,7 +9,9 @@ import {
   DialogTitle,
   DialogContent,
   Slide,
+  Snackbar,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import {
   ApartmentSort,
   ApartmentList,
@@ -34,11 +36,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 export default function UserApartment() {
   const [state, setState] = useState({
     openFilter: false,
     openCreateApart: false,
     apartmentList: [],
+    notify: { vertical: "top", horizontal: "right" },
   });
 
   useEffect(() => {
@@ -73,14 +80,33 @@ export default function UserApartment() {
     setState((s) => ({ ...s, openFilter: false }));
   };
 
-  const handleCreateApart = () => {
-    setState((s) => ({ ...s, openCreateApart: !state.openCreateApart }));
+  const handleCreateApart = (data) => {
+    if (data.reload) {
+      window.location.reload();
+      setState((s) => ({
+        ...s,
+        openCreateApart: !state.openCreateApart,
+        notify: { ...s.notify, ...data },
+      }));
+    } else {
+      setState((s) => ({
+        ...s,
+        openCreateApart: !state.openCreateApart,
+        notify: { vertical: "top", horizontal: "right" },
+      }));
+    }
   };
 
   const handleResetFilter = () => {
     handleSubmit();
     resetForm();
   };
+
+  const handleNotify = () => {
+    setState((s) => ({ ...s, notify: { ...s.notify, open: false } }));
+  };
+
+  const { vertical, horizontal } = state.notify;
 
   return (
     <>
@@ -97,7 +123,7 @@ export default function UserApartment() {
             variant="contained"
             onClick={handleCreateApart}
           >
-            Add product
+            Create Apartment
           </Button>
           <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
             <ApartmentFilterSidebar
@@ -110,7 +136,6 @@ export default function UserApartment() {
             <ApartmentSort />
           </Stack>
         </Stack>
-
         <ApartmentList products={state.apartmentList} />
       </Container>
       <Dialog
@@ -127,9 +152,23 @@ export default function UserApartment() {
           />
         </DialogTitle>
         <DialogContent>
-          <CreateApartment props={{ isAdd: true }} />
+          <CreateApartment
+            props={{ isAdd: true }}
+            callBack={handleCreateApart}
+          />
         </DialogContent>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={state.notify.open}
+        onClose={handleNotify}
+        autoHideDuration={1500}
+        key={"top" + "right"}
+      >
+        <Alert severity={state.notify.type} sx={{ width: "100%" }}>
+          {state.notify.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
