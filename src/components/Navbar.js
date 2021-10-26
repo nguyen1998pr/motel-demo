@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Login from "../pages/Login";
+import { ApartmentContext } from "../context";
 import Register from "../pages/Register";
 import Avatar from "../components/Avatar";
 import { Link } from "react-router-dom";
@@ -17,6 +18,9 @@ let closeImg = {
 };
 
 const Navbar = () => {
+  const context = useContext(ApartmentContext);
+  const { getLoginStatus, getUserStatus } = context;
+  const user = getUserStatus();
   const [state, setState] = useState({
     user: {},
     isOpen: false,
@@ -26,17 +30,8 @@ const Navbar = () => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      const request = apiServices.userInfo();
-      request
-        .then((res) => {
-          setState((s) => ({ ...s, isLoggedIn: true, user: res.data.user }));
-        })
-        .catch((err) => {
-          setState((s) => ({ ...s, isLoggedIn: false }));
-        });
-    }
-  }, [state.isLoggedIn]);
+    console.log(user.infoLoading);
+  }, []);
 
   const handleToggle = () => {
     setState((s) => ({ ...s, isOpen: !state.isOpen }));
@@ -93,7 +88,7 @@ const Navbar = () => {
               </li>
             </div>
             <div className="right">
-              {!state.isLoggedIn ? (
+              {user.infoLoading ? null : !getLoginStatus() ? (
                 <>
                   <li>
                     <p
@@ -113,7 +108,7 @@ const Navbar = () => {
                   </li>
                 </>
               ) : (
-                <Avatar user={state.user} callBack={handleCallback} />
+                <Avatar user={user} callBack={handleCallback} />
               )}
             </div>
           </ul>

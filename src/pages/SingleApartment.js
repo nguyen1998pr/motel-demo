@@ -33,6 +33,8 @@ export default function SingleApartment() {
       setState((s) => ({
         ...s,
         fullScenesInformation: scenePanoInfo,
+        isLoadConfig: true,
+        loadState: true,
       }));
     }
   }, [apartment]);

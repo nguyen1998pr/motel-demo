@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useFormik } from "formik";
-// material
+import {
+  ApartmentSort,
+  ApartmentList,
+  ApartmentFilterSidebar,
+} from "../components/Apartments";
+import CreateApartment from "./CreateApartment";
+import { ApartmentContext } from "../context";
+import * as apiServices from "../store/motel/services";
 import {
   Container,
   Stack,
@@ -12,15 +19,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import {
-  ApartmentSort,
-  ApartmentList,
-  ApartmentFilterSidebar,
-} from "../components/Apartments";
-import CreateApartment from "./CreateApartment";
-import * as apiServices from "../store/motel/services";
-
-//
+import Loading from "../components/Loading";
 import cancel from "../images/cancel.png";
 
 // ----------------------------------------------------------------------
@@ -41,7 +40,11 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export default function UserApartment() {
+  const context = useContext(ApartmentContext);
+  const { getApartmentActionStatus } = context;
+  const apartmentAction = getApartmentActionStatus();
   const [state, setState] = useState({
+    isLoading: true,
     openFilter: false,
     openCreateApart: false,
     apartmentList: [],
@@ -49,13 +52,22 @@ export default function UserApartment() {
   });
 
   useEffect(() => {
+    setState((s) => ({ ...s, isLoading: true }));
     const request = apiServices.userApartment();
     request
       .then((res) => {
-        setState((s) => ({ ...s, apartmentList: res.data.obj }));
+        setTimeout(() => {
+          setState((s) => ({
+            ...s,
+            apartmentList: res.data.obj,
+            isLoading: false,
+          }));
+        }, 1000);
       })
-      .catch((err) => {});
-  }, []);
+      .catch((err) => {
+        setState((s) => ({ ...s, isLoading: false }));
+      });
+  }, [state.openCreateApart, apartmentAction.isEdit]);
 
   const formik = useFormik({
     initialValues: {
@@ -82,7 +94,6 @@ export default function UserApartment() {
 
   const handleCreateApart = (data) => {
     if (data.reload) {
-      window.location.reload();
       setState((s) => ({
         ...s,
         openCreateApart: !state.openCreateApart,
@@ -118,13 +129,24 @@ export default function UserApartment() {
           justifyContent="space-between"
           sx={{ mb: 5 }}
         >
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleCreateApart}
-          >
-            Create Apartment
-          </Button>
+          <div className="woocommerce">
+            <div className="customer-login">
+              <div className="form-row">
+                <button
+                  className="woocommerce-Button button"
+                  onClick={handleCreateApart}
+                  style={{ fontSize: "10px", height: "40px" }}
+                >
+                  <span
+                    className="button__text"
+                    style={{ font: "bolder 15px Quicksand, san-serif" }}
+                  >
+                    Create Apartment
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
           <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
             <ApartmentFilterSidebar
               formik={formik}
@@ -136,7 +158,11 @@ export default function UserApartment() {
             <ApartmentSort />
           </Stack>
         </Stack>
-        <ApartmentList products={state.apartmentList} />
+        {state.isLoading ? (
+          <Loading />
+        ) : (
+          <ApartmentList products={state.apartmentList} />
+        )}
       </Container>
       <Dialog
         open={state.openCreateApart}

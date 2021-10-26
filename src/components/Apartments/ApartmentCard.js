@@ -9,7 +9,6 @@ import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { red } from "@mui/material/colors";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -52,7 +51,6 @@ export default function RecipeReviewCard({ product }) {
 
   const handleEditApart = (data) => {
     if (data.reload) {
-      window.location.reload();
       setState((s) => ({
         ...s,
         openEditApart: !state.openEditApart,
@@ -76,11 +74,7 @@ export default function RecipeReviewCard({ product }) {
     <>
       <Card sx={{ maxWidth: 345, border: "inset" }}>
         <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              A
-            </Avatar>
-          }
+          avatar={<Avatar aria-label="recipe">A</Avatar>}
           action={
             <IconButton aria-label="settings">
               <MoreVertIcon />

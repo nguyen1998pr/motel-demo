@@ -6,6 +6,7 @@ import Apartments from "./pages/Apartments";
 import SingleApartment from "./pages/SingleApartment";
 import UserApartment from "./pages/UserApartments";
 import Mainpage from "./components/PanoramaView/views/index";
+import PrivateRoute from "./utils/privateRoute";
 import Error from "./pages/Error";
 
 import { Route, Switch } from "react-router-dom";
@@ -19,9 +20,9 @@ function App() {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/apartments/" component={Apartments} />
-        <Route exact path="/user/apartments" component={UserApartment} />
         <Route exact path="/apartments/:id" component={SingleApartment} />
-        <Route
+        <PrivateRoute exact path="/user/apartments" component={UserApartment} />
+        <PrivateRoute
           exact
           path="/user/apartments/:id/panorama"
           component={Mainpage}

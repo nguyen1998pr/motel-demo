@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import * as apiServices from "./store/motel/services";
-import items from "./data";
-// import Client from "./Contentful";
 
 const ApartmentContext = React.createContext();
 
@@ -10,7 +8,10 @@ export default class ApartmentProvider extends Component {
     apartments: [],
     sortedApartments: [],
     featuredApartments: [],
+    userInfo: { infoLoading: true },
+    apartmentAction: { isEdit: false },
     loading: true,
+    login: false,
     //
     type: "all",
     capacity: 1,
@@ -24,8 +25,8 @@ export default class ApartmentProvider extends Component {
   };
 
   ApartmentList() {
-    const request = apiServices.allApartment();
-    request
+    const allApartment = apiServices.allApartment();
+    allApartment
       .then((res) => {
         let apartments = this.formatData(res.data.obj);
         let featuredApartments = apartments.filter(
@@ -34,21 +35,44 @@ export default class ApartmentProvider extends Component {
         //
         let maxPrice = Math.max(...apartments.map((item) => item.price));
         let maxSize = Math.max(...apartments.map((item) => item.size));
-        this.setState({
+        this.setState((s) => ({
+          ...s,
           apartments,
           featuredApartments,
           sortedApartments: apartments,
           loading: false,
-          //
           price: maxPrice,
           maxPrice,
           maxSize,
-        });
+        }));
       })
       .catch((err) => {});
   }
 
+  UserInfo() {
+    const jwt = localStorage.getItem("token");
+    if (jwt) {
+      const userInfo = apiServices.userInfo();
+      userInfo
+        .then((res) => {
+          this.setState((s) => ({
+            ...s,
+            userInfo: { infoLoading: false, ...res.data.user },
+            login: true,
+          }));
+        })
+        .catch((err) => {
+          this.setState((s) => ({
+            ...s,
+            userInfo: { infoLoading: false },
+            login: false,
+          }));
+        });
+    }
+  }
+
   componentDidMount() {
+    this.UserInfo();
     this.ApartmentList();
   }
 
@@ -72,13 +96,36 @@ export default class ApartmentProvider extends Component {
     return apartment;
   };
 
-  updateApartment = (id, value) => {
-    let tempApartments = [...this.state.apartments];
-    const index = tempApartments.findIndex((obj) => obj.id === id);
-    const arr = [{ ...value }];
-    tempApartments[index] = this.formatData(arr);
-    console.log("aaaaaa", tempApartments);
-    this.setState((s) => ({ ...s, apartments: tempApartments }));
+  getLoginStatus = () => {
+    return this.state.login;
+  };
+
+  getUserStatus = () => {
+    return this.state.userInfo;
+  };
+
+  getApartmentActionStatus = () => {
+    return this.state.apartmentAction;
+  };
+
+  handleLogin = (event) => {
+    if (event) {
+      this.setState((s) => ({
+        ...s,
+        login: event.isLogin,
+        userInfo: event.userInfo,
+      }));
+    }
+  };
+
+  handleEditApart = () => {
+    this.setState((s) => ({
+      ...s,
+      apartmentAction: {
+        ...s.apartmentAction,
+        isEdit: !s.apartmentAction.isEdit,
+      },
+    }));
   };
 
   handleChange = (event) => {
@@ -154,8 +201,13 @@ export default class ApartmentProvider extends Component {
         value={{
           ...this.state,
           getApartment: this.getApartment,
+          getLoginStatus: this.getLoginStatus,
+          getUserStatus: this.getUserStatus,
+          getUserLoading: this.getUserLoading,
+          getApartmentActionStatus: this.getApartmentActionStatus,
           handleChange: this.handleChange,
-          updateApartment: this.updateApartment,
+          handleLogin: this.handleLogin,
+          handleEditApart: this.handleEditApart,
         }}
       >
         {this.props.children}

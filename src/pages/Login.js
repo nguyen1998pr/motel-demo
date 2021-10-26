@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import * as apiServices from "../store/motel/services";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { ApartmentContext } from "../context";
 import "../css/custom.css";
+import data from "@iconify/icons-eva/home-fill";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const Login = (props) => {
+  const context = useContext(ApartmentContext);
+  const { handleLogin } = context;
   const [state, setState] = useState({
     credentials: {},
     notify: { vertical: "top", horizontal: "right" },
@@ -44,6 +48,7 @@ const Login = (props) => {
             },
           }));
           props.callBack({ open: false, type: "login", loggedIn: true });
+          handleLogin({ isLogin: true, userInfo: res.data.user });
         }, 2000);
       })
       .catch((err) => {

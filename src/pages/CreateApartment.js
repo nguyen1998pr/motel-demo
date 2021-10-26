@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { makeStyles } from "@mui/styles";
-import { DropzoneArea } from "material-ui-dropzone";
+import React, { useState, useEffect, useContext } from "react";
+import { ApartmentContext } from "../context";
 import * as apiServices from "../store/motel/services";
+import { DropzoneArea } from "material-ui-dropzone";
+import { makeStyles } from "@mui/styles";
 import "../css/custom.css";
 
 const useStyles = makeStyles({
@@ -25,6 +26,8 @@ const useStyles = makeStyles({
 
 export default function CreateApartment(props) {
   const classes = useStyles();
+  const context = useContext(ApartmentContext);
+  const { handleEditApart } = context;
   const [state, setState] = useState({
     data: {
       pets: false,
@@ -83,7 +86,7 @@ export default function CreateApartment(props) {
   const handleCreate = (event) => {
     event.preventDefault();
 
-    const btn = document.querySelector(".woocommerce-Button");
+    const btn = document.querySelector(".submit-button");
     document.getElementById("submit").disabled = true;
     btn.classList.add("button--loading");
 
@@ -116,7 +119,7 @@ export default function CreateApartment(props) {
   const handleEdit = (event) => {
     event.preventDefault();
 
-    const btn = document.querySelector(".woocommerce-Button");
+    const btn = document.querySelector(".submit-button");
     document.getElementById("submit").disabled = true;
     btn.classList.add("button--loading");
 
@@ -127,7 +130,7 @@ export default function CreateApartment(props) {
       extras: state.data["extras"]?.trim().split("\n"),
     };
     formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
-    state.images.map((image, index) => {
+    state.images.map((image) => {
       formData.append("photo", image, image.name);
     });
 
@@ -136,6 +139,7 @@ export default function CreateApartment(props) {
       .then((res) => {
         setTimeout(function () {
           btn.classList.remove("button--loading");
+          handleEditApart();
           props.callBack({
             open: true,
             message: "Apartment Modified!",
@@ -386,7 +390,7 @@ export default function CreateApartment(props) {
                     </p>
                     <p className="form-row">
                       <button
-                        className="woocommerce-Button button"
+                        className="woocommerce-Button submit-button button"
                         id="submit"
                         name="submit"
                         value="submit"

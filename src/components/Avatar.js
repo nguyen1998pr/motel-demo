@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useRef, useState } from "react";
 import homeFill from "@iconify/icons-eva/home-fill";
 import personFill from "@iconify/icons-eva/person-fill";
 import settings2Fill from "@iconify/icons-eva/settings-2-fill";
+import { ApartmentContext } from "../context";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 // material
 import { alpha } from "@mui/material/styles";
@@ -43,6 +44,8 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function UserAvatar(props) {
+  const context = useContext(ApartmentContext);
+  const { handleLogin } = context;
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const history = useHistory();
@@ -56,7 +59,7 @@ export default function UserAvatar(props) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    props.callBack({ type: "logout", isLoggedIn: false });
+    handleLogin({ isLogin: false, userInfo: {} });
     history.push("/");
   };
 
