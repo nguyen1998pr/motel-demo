@@ -3,6 +3,7 @@ import { ApartmentContext } from "../context";
 import * as apiServices from "../store/motel/services";
 import { DropzoneArea } from "material-ui-dropzone";
 import { makeStyles } from "@mui/styles";
+import useValidator from "../utils/useValidator";
 import "../css/custom.css";
 
 const useStyles = makeStyles({
@@ -28,11 +29,13 @@ export default function CreateApartment(props) {
   const classes = useStyles();
   const context = useContext(ApartmentContext);
   const { handleEditApart } = context;
+  const [validator, showValidationMessage] = useValidator();
   const [state, setState] = useState({
     data: {
       pets: false,
       featured: false,
       breakfast: false,
+      type: "Single",
       images: [],
       panoImages: [],
     },
@@ -41,7 +44,7 @@ export default function CreateApartment(props) {
 
   useEffect(() => {
     if (props.props.isEdit) {
-      const request = apiServices.apartmentInfo(props.props.apartId);
+      const request = apiServices.apartmentEdit(props.props.apartId);
       request
         .then((res) => {
           setState((s) => ({
@@ -53,7 +56,7 @@ export default function CreateApartment(props) {
                 .join("\n"),
               images: res.data.prop.fields.images.map(
                 (item) =>
-                  `http://10.30.176.132:8080/uploads/properties/${item.name}`
+                  `${process.env.REACT_APP_API_URL}/uploads/properties/${item.name}`
               ),
             },
           }));
@@ -86,34 +89,38 @@ export default function CreateApartment(props) {
   const handleCreate = (event) => {
     event.preventDefault();
 
-    const btn = document.querySelector(".submit-button");
-    document.getElementById("submit").disabled = true;
-    btn.classList.add("button--loading");
+    if (validator.allValid()) {
+      const btn = document.querySelector(".submit-button");
+      document.getElementById("submit").disabled = true;
+      btn.classList.add("button--loading");
 
-    const formData = new FormData();
-    const data = {
-      ...state.data,
-      extras: state.data["extras"]?.trim().split("\n"),
-    };
-    formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
-    state.images.map((image, index) => {
-      formData.append("photo", image, image.name);
-    });
+      const formData = new FormData();
+      const data = {
+        ...state.data,
+        extras: state.data["extras"]?.trim().split("\n"),
+      };
+      formData.append("thisProp", JSON.stringify({ fields: { ...data } }));
+      state.images.map((image, index) => {
+        formData.append("photo", image, image.name);
+      });
 
-    const request = apiServices.addApartment(formData);
-    request
-      .then((res) => {
-        setTimeout(function () {
-          btn.classList.remove("button--loading");
-          props.callBack({
-            open: true,
-            message: "Apartment Created!",
-            type: "success",
-            reload: true,
-          });
-        }, 2000);
-      })
-      .catch((err) => {});
+      const request = apiServices.addApartment(formData);
+      request
+        .then((res) => {
+          setTimeout(function () {
+            btn.classList.remove("button--loading");
+            props.callBack({
+              open: true,
+              message: "Apartment Created!",
+              type: "success",
+              reload: true,
+            });
+          }, 2000);
+        })
+        .catch((err) => {});
+    } else {
+      showValidationMessage(true);
+    }
   };
 
   const handleEdit = (event) => {
@@ -167,23 +174,25 @@ export default function CreateApartment(props) {
                   <h2>Normal Images</h2>
                   <div>
                     {props.props.isAdd || !state.data.images.length ? (
-                      <DropzoneArea
-                        acceptedFiles={["image/*"]}
-                        filesLimit={10}
-                        name="images"
-                        showAlerts={false}
-                        onChange={handleImage}
-                        showPreviews
-                        showPreviewsInDropzone={false}
-                        onAdd={(fileObjs) =>
-                          console.log("Added Files:", fileObjs)
-                        }
-                        dropzoneClass={classes.dropzone}
-                        previewGridClasses={{
-                          item: classes.item,
-                          container: classes.container,
-                        }}
-                      />
+                      <>
+                        <DropzoneArea
+                          acceptedFiles={["image/*"]}
+                          filesLimit={10}
+                          name="images"
+                          showAlerts={false}
+                          onChange={handleImage}
+                          showPreviews
+                          showPreviewsInDropzone={false}
+                          onAdd={(fileObjs) =>
+                            console.log("Added Files:", fileObjs)
+                          }
+                          dropzoneClass={classes.dropzone}
+                          previewGridClasses={{
+                            item: classes.item,
+                            container: classes.container,
+                          }}
+                        />
+                      </>
                     ) : null}
                     {state.data.images.length && props.props.isEdit ? (
                       <DropzoneArea
@@ -215,7 +224,7 @@ export default function CreateApartment(props) {
                     <label>
                       Apartment Name&nbsp;<span className="required">*</span>
                     </label>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <input
                         type="text"
                         spellCheck="false"
@@ -228,26 +237,38 @@ export default function CreateApartment(props) {
                         id="apartmentName"
                         onChange={handleChange}
                         autoComplete="off"
+                        onBlur={() => validator.showMessageFor("apartmentName")}
                       />
-                    </p>
+                      {validator.message(
+                        "apartmentName",
+                        state.data.apartmentName,
+                        "required",
+                        {
+                          messages: {
+                            required: `"Apartment Name" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
                     <label>
                       Type&nbsp;<span className="required">*</span>
                     </label>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
-                      <input
-                        type="text"
-                        spellCheck="false"
-                        className="woocommerce-Input woocommerce-Input--text input-text"
-                        defaultValue={props.props.isEdit ? state.data.type : ""}
-                        placeholder="Type"
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      <select
+                        onChange={handleChange}
                         name="type"
                         id="type"
-                        onChange={handleChange}
-                        autoComplete="off"
-                      />
-                    </p>
+                        defaultValue={
+                          props.props.isEdit ? state.data.type : "Single"
+                        }
+                      >
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Multi">Multi</option>
+                      </select>
+                    </div>
                     <div style={{ display: "flex" }}>
-                      <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                         <label>
                           Sỉze&nbsp;<span className="required">*</span>
                         </label>
@@ -263,9 +284,21 @@ export default function CreateApartment(props) {
                           id="size"
                           onChange={handleChange}
                           autoComplete="off"
+                          onBlur={() => validator.showMessageFor("size")}
                         />
-                      </p>
-                      <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                        {validator.message(
+                          "size",
+                          state.data.size,
+                          "required|numeric|min:20,num",
+                          {
+                            messages: {
+                              required: `"Size" is Required`,
+                              numeric: `"Size" must be a number`,
+                            },
+                          }
+                        )}
+                      </div>
+                      <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                         <label>
                           Price&nbsp;<span className="required">*</span>
                         </label>
@@ -281,10 +314,22 @@ export default function CreateApartment(props) {
                           id="price"
                           onChange={handleChange}
                           autoComplete="off"
+                          onBlur={() => validator.showMessageFor("price")}
                         />
-                      </p>
+                        {validator.message(
+                          "price",
+                          state.data.price,
+                          "required|numeric|min:0,num",
+                          {
+                            messages: {
+                              required: `"Price" is Required`,
+                              numeric: `"Price" must be a number`,
+                            },
+                          }
+                        )}
+                      </div>
                     </div>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <label>
                         Capacity&nbsp;<span className="required">*</span>
                       </label>
@@ -300,9 +345,21 @@ export default function CreateApartment(props) {
                         id="capacity"
                         onChange={handleChange}
                         autoComplete="off"
+                        onBlur={() => validator.showMessageFor("capacity")}
                       />
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
+                      {validator.message(
+                        "capacity",
+                        state.data.capacity,
+                        "required|numeric|min:1,num",
+                        {
+                          messages: {
+                            required: `"Capacity" is Required`,
+                            numeric: `"Capacity" must be a number`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
                       <label>
                         Desciption&nbsp;<span className="required">*</span>
                       </label>
@@ -317,8 +374,19 @@ export default function CreateApartment(props) {
                         name="description"
                         id="description"
                         onChange={handleChange}
+                        onBlur={() => validator.showMessageFor("description")}
                       />
-                    </p>
+                      {validator.message(
+                        "description",
+                        state.data.capacity,
+                        "required",
+                        {
+                          messages: {
+                            required: `"Description" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
                     <p
                       className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide"
                       style={{ display: "inline-grid", width: "100%" }}

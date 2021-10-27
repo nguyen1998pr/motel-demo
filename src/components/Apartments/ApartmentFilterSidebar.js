@@ -30,12 +30,7 @@ export const SORT_BY_OPTIONS = [
   { value: "priceAsc", label: "Price: Low-High" },
 ];
 export const FILTER_GENDER_OPTIONS = ["Men", "Women", "Kids"];
-export const FILTER_CATEGORY_OPTIONS = [
-  "All",
-  "Shose",
-  "Apparel",
-  "Accessories",
-];
+export const FILTER_CATEGORY_OPTIONS = ["All", "Single", "Double", "Multiple"];
 export const FILTER_RATING_OPTIONS = [
   "up4Star",
   "up3Star",
@@ -43,9 +38,9 @@ export const FILTER_RATING_OPTIONS = [
   "up1Star",
 ];
 export const FILTER_PRICE_OPTIONS = [
-  { value: "below", label: "Below $25" },
-  { value: "between", label: "Between $25 - $75" },
-  { value: "above", label: "Above $75" },
+  { value: "below", label: "Below $100" },
+  { value: "between", label: "Between $100 - $500" },
+  { value: "above", label: "Above $500" },
 ];
 export const FILTER_COLOR_OPTIONS = [
   "#00AB55",
@@ -137,7 +132,7 @@ export default function ShopFilterSidebar({
 
               <div>
                 <Typography variant="subtitle1" gutterBottom>
-                  Category
+                  Type
                 </Typography>
                 <RadioGroup {...getFieldProps("category")}>
                   {FILTER_CATEGORY_OPTIONS.map((item) => (

@@ -4,12 +4,13 @@ import Hero from "../components/Hero";
 import Banner from "../components/Banner";
 import Services from "../components/Services";
 import FeaturedApartments from "../components/FeaturedApartments";
+
 const home = () => {
   return (
     <>
       <Hero>
         <Banner title="Da Nang Motel" subtitle="apartments starting at $299">
-          <Link to="/apartments" className="btn-primary">
+          <Link to="/h/apartments" className="btn-primary">
             our apartments
           </Link>
         </Banner>

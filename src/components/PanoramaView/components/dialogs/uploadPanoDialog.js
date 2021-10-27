@@ -29,7 +29,7 @@ const useStyles = makeStyles({
 export default function UploadPanorama(props) {
   const classes = useStyles();
   const id = window.location.pathname.split("/")[3];
-  const imgSrc = "http://10.30.176.132:8080/uploads/properties/";
+  const imgSrc = `${process.env.REACT_APP_API_URL}/uploads/properties/`;
   const [state, setState] = useState({ data: {}, panoImages: [] });
 
   useEffect(() => {
@@ -54,8 +54,8 @@ export default function UploadPanorama(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const btn = document.querySelector(".woocommerce-Button");
-    document.getElementById("submit").disabled = true;
+    const btn = document.querySelector(".submit-button");
+    document.getElementById("submitDialog").disabled = true;
     btn.classList.add("button--loading");
 
     const formData = new FormData();
@@ -135,8 +135,8 @@ export default function UploadPanorama(props) {
           onClick={handleSubmit}
           color="success"
           variant="contained"
-          className="woocommerce-Button button"
-          id="submit"
+          className="woocommerce-Button submit-button button"
+          id="submitDialog"
         >
           <span className="button__mui">Submit</span>
         </Button>

@@ -16,7 +16,7 @@ import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function AddSceneDialog(props) {
   const id = window.location.pathname.split("/")[3];
-  const imgSrc = "http://10.30.176.132:8080/uploads/properties/";
+  const imgSrc = `${process.env.REACT_APP_API_URL}/uploads/properties/`;
   const [state, setState] = useState({
     scene: {
       // use to save / retrieve config of scene
@@ -36,7 +36,7 @@ export default function AddSceneDialog(props) {
   });
 
   useEffect(() => {
-    const request = apiServices.apartmentInfo(id);
+    const request = apiServices.apartmentEdit(id);
     request
       .then((res) => {
         const formatData = res.data.prop.fields.panoImages?.map((item) => {

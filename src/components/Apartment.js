@@ -14,7 +14,7 @@ const Apartment = memo(({ apartment }) => {
           <h6>${price}</h6>
           <p>per month</p>
         </div>
-        <Link to={`/apartments/${id}`} className="btn-primary apartment-link">
+        <Link to={`/h/apartments/${id}`} className="btn-primary apartment-link">
           features
         </Link>
       </div>

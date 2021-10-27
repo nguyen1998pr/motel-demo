@@ -45,7 +45,7 @@ export default function RecipeReviewCard({ product }) {
     openEditApart: false,
     notify: { vertical: "top", horizontal: "right" },
   });
-  const host = "http://10.30.176.132:8080";
+  const host = process.env.REACT_APP_API_URL;
   const imagePath = "/uploads/properties/";
   const imageName = product.fields.images[0]?.name;
 
@@ -95,7 +95,7 @@ export default function RecipeReviewCard({ product }) {
           </Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <Link to={`/apartments/${product._id}`}>
+          <Link to={`/h/apartments/${product._id}`}>
             <Tooltip title="View">
               <IconButton aria-label="view">
                 <VisibilityIcon />
@@ -113,7 +113,7 @@ export default function RecipeReviewCard({ product }) {
             </IconButton>
           </Tooltip>
           <Link
-            to={`/user/apartments/${product._id}/panorama`}
+            to={`/h/user/apartments/${product._id}/panorama`}
             style={{ marginLeft: "auto" }}
             onClick={() =>
               setTimeout(() => {

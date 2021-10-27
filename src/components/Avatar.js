@@ -27,7 +27,7 @@ const MENU_OPTIONS = [
   {
     label: "My Apartment",
     icon: homeFill,
-    linkTo: "/user/apartments",
+    linkTo: "/h/user/apartments",
   },
   {
     label: "Profile",

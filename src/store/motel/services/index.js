@@ -20,10 +20,14 @@ export const addApartment = (data) => {
   });
 };
 
-export const apartmentInfo = (id) => {
+export const apartmentEdit = (id) => {
   return axiosMotel.get(`property/edit/${id}`, "", {
     headers: { Authorization: localStorage.getItem("token") },
   });
+};
+
+export const apartmentInfo = (id) => {
+  return axiosMotel.get(`property/view/${id}`, "", {});
 };
 
 export const editApartment = (id, data) => {

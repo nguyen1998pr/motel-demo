@@ -156,7 +156,7 @@ export default function Mainpage() {
       isLoadConfig: true,
       loadState: true,
     }));
-    const request = apiServices.apartmentInfo(id);
+    const request = apiServices.apartmentEdit(id);
     request
       .then((res) => {
         setState((s) => ({

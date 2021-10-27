@@ -11,13 +11,14 @@ import * as apiServices from "../store/motel/services";
 import {
   Container,
   Stack,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   Slide,
   Snackbar,
 } from "@mui/material";
+import Pagination from "@mui/material/Pagination";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import MuiAlert from "@mui/material/Alert";
 import Loading from "../components/Loading";
 import cancel from "../images/cancel.png";
@@ -30,6 +31,19 @@ let closeImg = {
   marginTop: "5px",
   width: "20px",
 };
+
+const theme = createTheme({
+  components: {
+    MuiPagination: {
+      styleOverrides: {
+        ul: {
+          justifyContent: "center",
+          padding: "10px 0",
+        },
+      },
+    },
+  },
+});
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -164,6 +178,16 @@ export default function UserApartment() {
           <ApartmentList products={state.apartmentList} />
         )}
       </Container>
+      {state.apartmentList.length > 8 ? (
+        <ThemeProvider theme={theme}>
+          <Pagination
+            count={Math.ceil(state.apartmentList.length / 8)}
+            showFirstButton
+            showLastButton
+            variant="outlined"
+          />
+        </ThemeProvider>
+      ) : null}
       <Dialog
         open={state.openCreateApart}
         fullScreen

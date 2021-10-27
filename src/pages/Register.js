@@ -3,6 +3,7 @@ import * as apiServices from "../store/motel/services";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import logo from "../images/logo.svg";
+import useValidator from "../utils/useValidator";
 import "../css/custom.css";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -10,8 +11,11 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const Register = (props) => {
+  const [validator, showValidationMessage] = useValidator();
   const [state, setState] = useState({
-    data: {},
+    data: {
+      firstName: "",
+    },
     notify: { vertical: "top", horizontal: "right" },
   });
 
@@ -24,43 +28,46 @@ const Register = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (validator.allValid()) {
+      const btn = document.querySelector(".woocommerce-Button");
+      document.getElementById("register").disabled = true;
+      btn.classList.add("button--loading");
 
-    const btn = document.querySelector(".woocommerce-Button");
-    document.getElementById("register").disabled = true;
-    btn.classList.add("button--loading");
-
-    const request = apiServices.userRegister(state.data);
-    request
-      .then((res) => {
-        setTimeout(function () {
-          btn.classList.remove("button--loading");
-          setState((s) => ({
-            ...s,
-            notify: {
-              ...state.notify,
-              open: true,
-              message: "Register Success!",
-              type: "success",
-            },
-          }));
-        }, 2000);
-      })
-      .catch((err) => {
-        setTimeout(function () {
-          btn.classList.remove("button--loading");
-          if (err.status === 500 || err.status === 409) {
+      const request = apiServices.userRegister(state.data);
+      request
+        .then((res) => {
+          setTimeout(function () {
+            btn.classList.remove("button--loading");
             setState((s) => ({
               ...s,
               notify: {
                 ...state.notify,
                 open: true,
-                message: "Register Fail!",
-                type: "error",
+                message: "Register Success!",
+                type: "success",
               },
             }));
-          }
-        }, 2000);
-      });
+          }, 2000);
+        })
+        .catch((err) => {
+          setTimeout(function () {
+            btn.classList.remove("button--loading");
+            if (err.status === 500 || err.status === 409) {
+              setState((s) => ({
+                ...s,
+                notify: {
+                  ...state.notify,
+                  open: true,
+                  message: "Register Fail!",
+                  type: "error",
+                },
+              }));
+            }
+          }, 2000);
+        });
+    } else {
+      showValidationMessage(true);
+    }
   };
 
   const handleNotify = () => {
@@ -101,7 +108,7 @@ const Register = (props) => {
                   <h2>Register Account</h2>
                   <form className="woocommerce-form woocommerce-form-login login">
                     <div style={{ display: "flex" }}>
-                      <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                         <input
                           type="text"
                           className="woocommerce-Input woocommerce-Input--text input-text"
@@ -111,9 +118,21 @@ const Register = (props) => {
                           id="firstName"
                           onChange={handleChange}
                           autoComplete="off"
+                          onBlur={() => validator.showMessageFor("firstName")}
                         />
-                      </p>
-                      <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                        {validator.message(
+                          "firstName",
+                          state.data.firstName,
+                          "required|alpha_space",
+                          {
+                            messages: {
+                              required: `"First Name" is Required`,
+                              alpha_space: `Numbers are not Allowed`,
+                            },
+                          }
+                        )}
+                      </div>
+                      <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                         <input
                           type="text"
                           className="woocommerce-Input woocommerce-Input--text input-text"
@@ -123,10 +142,22 @@ const Register = (props) => {
                           id="lastName"
                           onChange={handleChange}
                           autoComplete="off"
+                          onBlur={() => validator.showMessageFor("lastName")}
                         />
-                      </p>
+                        {validator.message(
+                          "lastName",
+                          state.data.lastName,
+                          "required|alpha_space",
+                          {
+                            messages: {
+                              required: `"Last Name" is Required`,
+                              alpha_space: `Numbers are not Allowed`,
+                            },
+                          }
+                        )}
+                      </div>
                     </div>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <input
                         type="text"
                         className="woocommerce-Input woocommerce-Input--text input-text"
@@ -136,37 +167,70 @@ const Register = (props) => {
                         id="userName"
                         onChange={handleChange}
                         autoComplete="off"
+                        onBlur={() => validator.showMessageFor("userName")}
                       />
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
-                      <span className="password-input">
-                        <input
-                          className="woocommerce-Input woocommerce-Input--text input-text"
-                          required=""
-                          placeholder="Password"
-                          type="password"
-                          name="password"
-                          id="password"
-                          onChange={handleChange}
-                        />
-                        <span className="show-password-input"></span>
-                      </span>
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
+                      {validator.message(
+                        "userName",
+                        state.data.userName,
+                        "required",
+                        {
+                          messages: {
+                            required: `"userName" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
+                      <input
+                        className="woocommerce-Input woocommerce-Input--text input-text"
+                        required=""
+                        placeholder="Password"
+                        type="password"
+                        name="password"
+                        id="password"
+                        onChange={handleChange}
+                        onBlur={() => validator.showMessageFor("password")}
+                      />
+                      {validator.message(
+                        "password",
+                        state.data.password,
+                        "required",
+                        {
+                          messages: {
+                            required: `"Password" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide form-row-password">
                       <span className="password-input">
                         <input
                           className="woocommerce-Input woocommerce-Input--text input-text"
                           required=""
                           placeholder="Confirm Password"
                           type="password"
-                          name="confirm-password"
-                          id="confirm-password"
+                          name="confirmPassword"
+                          id="confirmPassword"
                           onChange={handleChange}
+                          onBlur={() =>
+                            validator.showMessageFor("confirmPassword")
+                          }
                         />
                         <span className="show-password-input"></span>
                       </span>
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      {validator.message(
+                        "confirmPassword",
+                        state.data.confirmPassword,
+                        `required|in:${state.data.password}`,
+                        {
+                          messages: {
+                            required: `"Confirm Password" is Required`,
+                            in: `Password doesn't match!`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <input
                         type="text"
                         className="woocommerce-Input woocommerce-Input--text input-text"
@@ -176,10 +240,22 @@ const Register = (props) => {
                         name="email"
                         id="email"
                         onChange={handleChange}
+                        onBlur={() => validator.showMessageFor("email")}
                         autoComplete="off"
                       />
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      {validator.message(
+                        "email",
+                        state.data.email,
+                        "required|email",
+                        {
+                          messages: {
+                            required: `"Email" is Required`,
+                            email: `"Email" is Invalid`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <input
                         type="text"
                         className="woocommerce-Input woocommerce-Input--text input-text"
@@ -188,9 +264,20 @@ const Register = (props) => {
                         onChange={handleChange}
                         name="phone"
                         id="phone"
+                        onBlur={() => validator.showMessageFor("phone")}
                       />
-                    </p>
-                    <p className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
+                      {validator.message(
+                        "phone",
+                        state.data.phone,
+                        "required",
+                        {
+                          messages: {
+                            required: `"Phone" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
+                    <div className="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">
                       <input
                         type="text"
                         className="woocommerce-Input woocommerce-Input--text input-text"
@@ -199,8 +286,19 @@ const Register = (props) => {
                         name="address"
                         onChange={handleChange}
                         id="address"
+                        onBlur={() => validator.showMessageFor("address")}
                       />
-                    </p>
+                      {validator.message(
+                        "address",
+                        state.data.address,
+                        "required",
+                        {
+                          messages: {
+                            required: `"Address" is Required`,
+                          },
+                        }
+                      )}
+                    </div>
                     <p className="form-row">
                       <button
                         className="woocommerce-Button button"

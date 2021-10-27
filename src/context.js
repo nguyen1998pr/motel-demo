@@ -68,6 +68,12 @@ export default class ApartmentProvider extends Component {
             login: false,
           }));
         });
+    } else {
+      this.setState((s) => ({
+        ...s,
+        userInfo: { infoLoading: false },
+        login: false,
+      }));
     }
   }
 
@@ -81,7 +87,8 @@ export default class ApartmentProvider extends Component {
       //let id = item.sys.id;
       let id = item._id;
       let images = item.fields.images.map(
-        (image) => `http://10.30.176.132:8080/uploads/properties/${image.name}`
+        (image) =>
+          `${process.env.REACT_APP_API_URL}/uploads/properties/${image.name}`
       );
 
       let apartment = { ...item.fields, images, id };

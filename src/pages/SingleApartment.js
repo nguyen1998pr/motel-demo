@@ -58,7 +58,7 @@ export default function SingleApartment() {
     return (
       <div className="error">
         <h3> no such apartment could be found...</h3>
-        <Link to="/apartments" className="btn-primary">
+        <Link to="/h/apartments" className="btn-primary">
           back to apartments
         </Link>
       </div>
@@ -83,7 +83,7 @@ export default function SingleApartment() {
     <>
       <StyledHero img={images[0] || state.defaultBcg}>
         <Banner title={`${apartmentName}`}>
-          <Link to="/apartments" className="btn-primary">
+          <Link to="/h/apartments" className="btn-primary">
             back to apartments
           </Link>
         </Banner>
@@ -113,7 +113,10 @@ export default function SingleApartment() {
           ) : null}
         </div>
         <div className="single-apartment-info">
-          <article className="desc">
+          <article
+            className="desc"
+            style={{ maxWidth: "50vw", wordBreak: "break-word" }}
+          >
             <h3>details</h3>
             <p>{description}</p>
           </article>

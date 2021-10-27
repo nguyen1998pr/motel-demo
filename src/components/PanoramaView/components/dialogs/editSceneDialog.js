@@ -143,6 +143,7 @@ export default function EditSceneDialog(props) {
             FormHelperTextProps={{ classes: helperTextStyles() }}
             key={`img${state.scene["imageSource"]}`}
             defaultValue={state.scene["imageSource"]}
+            disabled
             variant="outlined"
             margin="dense"
             id="image-source"
@@ -166,10 +167,10 @@ export default function EditSceneDialog(props) {
             name="imageSource"
             error={errors["imageSource"]?.length > 0}
             onBlur={handleInputValue}
-            {...(errors["imageSource"] && {
-              error: true,
-              helperText: errors["imageSource"],
-            })}
+            // {...(errors["imageSource"] && {
+            //   error: true,
+            //   helperText: errors["imageSource"],
+            // })}
             fullWidth
           />
           <TextField
