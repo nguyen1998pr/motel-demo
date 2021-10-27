@@ -5,7 +5,6 @@ import Register from "../pages/Register";
 import Avatar from "../components/Avatar";
 import { Link } from "react-router-dom";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
-import * as apiServices from "../store/motel/services";
 import cancel from "../images/cancel.png";
 import logo from "../images/logo.svg";
 import { FaAlignRight } from "react-icons/fa";
@@ -29,9 +28,7 @@ const Navbar = () => {
     isLoggedIn: false,
   });
 
-  useEffect(() => {
-    console.log(user.infoLoading);
-  }, []);
+  useEffect(() => {}, []);
 
   const handleToggle = () => {
     setState((s) => ({ ...s, isOpen: !state.isOpen }));
@@ -71,7 +68,7 @@ const Navbar = () => {
       <nav className="navbar">
         <div className="nav-center">
           <div className="nav-header">
-            <Link to="/">
+            <Link to="/h">
               <img src={logo} alt="RentNStudy" />
             </Link>
             <button type="button" className="nav-btn" onClick={handleToggle}>
@@ -81,7 +78,7 @@ const Navbar = () => {
           <ul className={state.isOpen ? "nav-links show-nav" : "nav-links"}>
             <div className="left">
               <li>
-                <Link to="/">Home</Link>
+                <Link to="/h">Home</Link>
               </li>
               <li>
                 <Link to="/h/apartments">Apartments</Link>

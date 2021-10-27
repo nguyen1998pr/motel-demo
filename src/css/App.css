@@ -93,10 +93,10 @@ h6 {
   top: 0;
   left: 0;
   width: 100%;
-  max-width: calc(100vw - 17px);
+  max-width: calc(100vw - 0px);
   padding: 0.75rem 2rem;
   background: var(--offWhite);
-  z-index: 1;
+  z-index: 1202;
 }
 .nav-header {
   display: flex;
@@ -145,7 +145,7 @@ h6 {
 }
 .show-nav :nth-child(1) {
   max-height: 0px;
-  transition: max-height 0.15s ease-out;
+  transition: max-height 1s ease-out;
   display: none;
 }
 @media screen and (min-width: 835px) {
@@ -170,6 +170,10 @@ h6 {
   .nav-links p {
     margin: 0 1rem;
     padding: 0.5rem 0;
+  }
+  .show-nav :nth-child(1) {
+    max-height: 100px;
+    display: flex;
   }
 }
 /* end of navbar */

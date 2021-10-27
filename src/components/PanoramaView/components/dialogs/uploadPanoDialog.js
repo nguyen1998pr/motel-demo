@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 
 export default function UploadPanorama(props) {
   const classes = useStyles();
-  const id = window.location.pathname.split("/")[3];
+  const id = window.location.pathname.split("/")[4];
   const imgSrc = `${process.env.REACT_APP_API_URL}/uploads/properties/`;
   const [state, setState] = useState({ data: {}, panoImages: [] });
 

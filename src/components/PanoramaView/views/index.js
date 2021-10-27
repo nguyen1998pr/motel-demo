@@ -94,7 +94,7 @@ const mdTheme = createTheme();
 const types = [{ title: "info" }, { title: "scene" }];
 
 export default function Mainpage() {
-  const id = window.location.pathname.split("/")[3];
+  const id = window.location.pathname.split("/")[4];
 
   const [state, setState] = useState({
     isOpenDrawer: false, // use to open / close the sidebar content
@@ -462,13 +462,14 @@ export default function Mainpage() {
               >
                 CREATE PANORAMA VIEW
               </Typography>
-              <Box>
+              <Box style={{ display: "flex" }}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={() => isUploadPano(true)}
+                  style={{ margin: "5px", textTransform: "none" }}
                 >
-                  Upload Image
+                  Upload
                 </Button>
                 <> </>
                 <Button
@@ -477,6 +478,7 @@ export default function Mainpage() {
                   onClick={exportConfig}
                   className="woocommerce-Button button"
                   id="save"
+                  style={{ margin: "5px", textTransform: "none" }}
                 >
                   <span className="button__mui">Save</span>
                 </Button>
@@ -523,7 +525,7 @@ export default function Mainpage() {
                   ? theme.palette.grey[100]
                   : theme.palette.grey[900],
               flexGrow: 1,
-              height: "93.3vh",
+              height: "93.2vh",
               overflow: "hidden",
             }}
           >

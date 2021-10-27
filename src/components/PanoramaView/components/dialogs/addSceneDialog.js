@@ -15,7 +15,7 @@ import * as apiServices from "../../../../store/motel/services";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 export default function AddSceneDialog(props) {
-  const id = window.location.pathname.split("/")[3];
+  const id = window.location.pathname.split("/")[4];
   const imgSrc = `${process.env.REACT_APP_API_URL}/uploads/properties/`;
   const [state, setState] = useState({
     scene: {
@@ -144,7 +144,11 @@ export default function AddSceneDialog(props) {
       <form id="my-add-scene">
         <DialogTitle id="form-dialog-title">Add Scene</DialogTitle>
         <DialogContent
-          style={{ display: "flex", justifyContent: "space-between" }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
         >
           {state.panoImage.length ? (
             <div style={{ maxWidth: "650px" }}>

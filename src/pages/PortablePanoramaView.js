@@ -45,7 +45,7 @@ export default function PortableView() {
   }, [state.loadState]);
 
   return (
-    <div style={{ position: "absolute" }}>
+    <div style={{ width: "90vw", height: "80vh", margin: "auto" }}>
       {state.fullScenesInformation.length ? (
         <ReactPannellum
           id={Object.keys(state.fullScenesInformation[0])[0]}
