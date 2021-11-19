@@ -9,7 +9,7 @@ export default class ApartmentProvider extends Component {
     sortedApartments: [],
     featuredApartments: [],
     userInfo: { infoLoading: true },
-    apartmentAction: { isEdit: false },
+    apartmentAction: { isEdit: false, isCreate: false, isDelete: false },
     loading: true,
     login: false,
     //
@@ -135,6 +135,26 @@ export default class ApartmentProvider extends Component {
     }));
   };
 
+  handleCreateApartContext = () => {
+    this.setState((s) => ({
+      ...s,
+      apartmentAction: {
+        ...s.apartmentAction,
+        isCreate: !s.apartmentAction.isCreate,
+      },
+    }));
+  };
+
+  handleDeleteApartContext = () => {
+    this.setState((s) => ({
+      ...s,
+      apartmentAction: {
+        ...s.apartmentAction,
+        isDelete: !s.apartmentAction.isDelete,
+      },
+    }));
+  };
+
   handleChange = (event) => {
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
@@ -215,6 +235,8 @@ export default class ApartmentProvider extends Component {
           handleChange: this.handleChange,
           handleLogin: this.handleLogin,
           handleEditApart: this.handleEditApart,
+          handleCreateApartContext: this.handleCreateApartContext,
+          handleDeleteApartContext: this.handleDeleteApartContext,
         }}
       >
         {this.props.children}

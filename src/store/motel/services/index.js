@@ -51,3 +51,9 @@ export const userApartment = () => {
     headers: { Authorization: localStorage.getItem("token") },
   });
 };
+
+export const deleteApartment = (id) => {
+  return axiosMotel.delete(`property/delete/${id}`, "", {
+    headers: { Authorization: localStorage.getItem("token") },
+  });
+};

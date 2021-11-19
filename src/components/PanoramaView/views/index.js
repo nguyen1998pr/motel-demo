@@ -8,12 +8,18 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 import Container from "@mui/material/Container";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ShareIcon from "@mui/icons-material/Share";
 import { MainListItems } from "../components/categories";
-import { Alert, AlertTitle, Snackbar } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Snackbar,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import AddInfoDialog from "../components/dialogs/addInfoDialog";
 import AddSceneDialog from "../components/dialogs/addSceneDialog";
@@ -33,7 +39,6 @@ import ReactPannellum, {
   stopAutoRotate,
   showCompass,
   addScene,
-  destroy,
 } from "../libs/react-pannellum/dist";
 import * as apiServices from "../../../store/motel/services";
 
@@ -134,6 +139,7 @@ export default function Mainpage() {
     isUploadPano: false,
     isLoadConfig: false,
     loadState: false,
+    isOpenShare: false,
     config: {
       sceneFadeDuration: 1000,
     }, // config for viewer
@@ -428,6 +434,13 @@ export default function Mainpage() {
     setState((s) => ({ ...s, notify: { ...s.notify, open: false } }));
   };
 
+  const handleShare = (status) => {
+    navigator.clipboard.writeText(
+      `${process.env.REACT_APP_HOST}/panorama/view/${id}`
+    );
+    setState((s) => ({ ...s, isOpenShare: status }));
+  };
+
   const { vertical, horizontal } = state.notify;
 
   return (
@@ -463,6 +476,16 @@ export default function Mainpage() {
                 CREATE PANORAMA VIEW
               </Typography>
               <Box style={{ display: "flex" }}>
+                <Tooltip
+                  leaveDelay={1500}
+                  onClose={() => handleShare(false)}
+                  open={state.isOpenShare}
+                  title="Embedded Link has been copied to Clipboard!"
+                >
+                  <IconButton onClick={() => handleShare(true)}>
+                    <ShareIcon fontSize="large" />
+                  </IconButton>
+                </Tooltip>
                 <Button
                   variant="contained"
                   color="primary"

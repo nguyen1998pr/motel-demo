@@ -81,7 +81,11 @@ export default function UserApartment() {
       .catch((err) => {
         setState((s) => ({ ...s, isLoading: false }));
       });
-  }, [state.openCreateApart, apartmentAction.isEdit]);
+  }, [
+    apartmentAction.isCreate,
+    apartmentAction.isEdit,
+    apartmentAction.isDelete,
+  ]);
 
   const formik = useFormik({
     initialValues: {

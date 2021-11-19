@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import CreateApartment from "../../pages/CreateApartment";
 import Card from "@mui/material/Card";
@@ -16,14 +16,18 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import { ApartmentContext } from "../../context";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
+  Button,
   Slide,
   Tooltip,
 } from "@mui/material";
 import cancel from "../../images/cancel.png";
+import * as apiServices from "../../store/motel/services/index";
 
 const closeImg = {
   cursor: "pointer",
@@ -41,8 +45,11 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export default function RecipeReviewCard({ product }) {
+  const context = useContext(ApartmentContext);
+  const { handleDeleteApartContext } = context;
   const [state, setState] = useState({
     openEditApart: false,
+    openDeleteApart: false,
     notify: { vertical: "top", horizontal: "right" },
   });
   const host = process.env.REACT_APP_API_URL;
@@ -64,8 +71,47 @@ export default function RecipeReviewCard({ product }) {
     }
   };
 
+  const handleDeleteApart = (data) => {
+    if (data.reload) {
+      setState((s) => ({
+        ...s,
+        openDeleteApart: !state.openDeleteApart,
+        notify: { ...s.notify, ...data },
+      }));
+    } else {
+      setState((s) => ({
+        openDeleteApart: !state.openDeleteApart,
+        notify: { vertical: "top", horizontal: "right" },
+      }));
+    }
+  };
+
   const handleNotify = () => {
     setState((s) => ({ ...s, notify: { ...s.notify, open: false } }));
+  };
+
+  const handleDeleteSubmit = (e) => {
+    e.preventDefault();
+
+    const btn = document.querySelector(".delete-button");
+    document.getElementById("delete").disabled = true;
+    btn.classList.add("button--loading");
+
+    const request = apiServices.deleteApartment(product._id);
+    request
+      .then((res) => {
+        setTimeout(function () {
+          btn.classList.remove("button--loading");
+          handleDeleteApart({
+            open: true,
+            message: "Apartment Was Removed!",
+            type: "success",
+            reload: true,
+          });
+          handleDeleteApartContext();
+        }, 2000);
+      })
+      .catch((err) => {});
   };
 
   const { vertical, horizontal } = state.notify;
@@ -108,7 +154,7 @@ export default function RecipeReviewCard({ product }) {
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete">
-            <IconButton aria-label="delete">
+            <IconButton aria-label="delete" onClick={handleDeleteApart}>
               <DeleteIcon />
             </IconButton>
           </Tooltip>
@@ -143,6 +189,35 @@ export default function RecipeReviewCard({ product }) {
             callBack={handleEditApart}
           />
         </DialogContent>
+      </Dialog>
+      <Dialog open={state.openDeleteApart} TransitionComponent={Transition}>
+        <DialogTitle id="alert-dialog-title">
+          <img
+            alt=""
+            src={cancel}
+            style={closeImg}
+            onClick={handleDeleteApart}
+          />
+        </DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this apartment?
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" size="small" onClick={handleDeleteApart}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            className="delete-button"
+            name="delete"
+            id="delete"
+            onClick={handleDeleteSubmit}
+          >
+            <span className="button__mui">Submit</span>
+          </Button>
+        </DialogActions>
       </Dialog>
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}

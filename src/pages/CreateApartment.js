@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 export default function CreateApartment(props) {
   const classes = useStyles();
   const context = useContext(ApartmentContext);
-  const { handleEditApart } = context;
+  const { handleEditApart, handleCreateApartContext } = context;
   const [validator, showValidationMessage] = useValidator();
   const [state, setState] = useState({
     data: {
@@ -109,6 +109,7 @@ export default function CreateApartment(props) {
         .then((res) => {
           setTimeout(function () {
             btn.classList.remove("button--loading");
+            handleCreateApartContext();
             props.callBack({
               open: true,
               message: "Apartment Created!",
