@@ -18,7 +18,7 @@ RUN npm config set proxy http://10.61.11.42:3128
 # CMD ["npm", "run", "serve"]
 
 # Production Stage
-FROM nginx:1.17-alpine as production-stage
+FROM nginx:1.21-alpine as production-stage
 
 COPY --from=build-stage /app/build /usr/share/nginx/html
 

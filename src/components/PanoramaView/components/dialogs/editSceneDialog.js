@@ -62,7 +62,6 @@ export default function EditSceneDialog(props) {
         URL: "",
       },
     });
-    console.log(getAllScenes());
   }, [props.open]);
 
   const { handleInputValue, handleFormSubmit, formIsValid, errors } =
@@ -104,7 +103,14 @@ export default function EditSceneDialog(props) {
               });
               setState((s) => ({
                 ...s,
-                scene: value ? Object.values(value)[0] : {},
+                scene: value
+                  ? {
+                      ...Object.values(value)[0],
+                      config: {
+                        ...Object.values(value)[0],
+                      },
+                    }
+                  : {},
                 hotSpot: {
                   ...s.hotSpot,
                   sceneId: value ? Object.keys(value)[0] : "",
