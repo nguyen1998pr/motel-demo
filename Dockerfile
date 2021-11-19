@@ -11,9 +11,14 @@ RUN npm config set http-proxy http://10.61.11.42:3128
 
 RUN npm config set proxy http://10.61.11.42:3128
 
+# Run with non-root user
+#RUN chown -R node:node /app
+
+#USER node
+
 #RUN npm install
 
-#RUN npm run build
+RUN npm run build
 
 # CMD ["npm", "run", "serve"]
 
